@@ -32,6 +32,8 @@ class _LoginScreenState extends State<LoginScreen>
   late Animation<double> _borderRadiusAnimation;
   bool _isAnimating = false;
   bool _showForm = true;
+  
+  bool _isPasswordObscured = false;
 
   @override
   void initState() {
@@ -121,11 +123,22 @@ class _LoginScreenState extends State<LoginScreen>
             hintText: AppLocalizations.of(context)!.email,
           ),
           const SizedBox(height: 20),
-
+         
           InputText(
             controller: _password,
             hintText: AppLocalizations.of(context)!.password,
-            obscureText: true,
+            obscureText: _isPasswordObscured,
+            suffixIcon: IconButton(
+              icon: Icon(
+                _isPasswordObscured ? Icons.visibility_off : Icons.visibility,
+                color: Colors.grey,
+              ),
+              onPressed: () {
+                setState(() {
+                  _isPasswordObscured = !_isPasswordObscured;
+                });
+              },
+            ),
           ),
 
           const SizedBox(height: 10),
