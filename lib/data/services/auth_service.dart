@@ -7,6 +7,7 @@ class AuthService {
   // Provide a stream of auth changes
   Stream<AuthState> get onAuthStateChange => _supabase.auth.onAuthStateChange;
 
+  String? get currentUserId => _supabase.auth.currentUser?.id;
   Session? get currentSession => _supabase.auth.currentSession;
 
   // Sign in (login)
@@ -19,6 +20,21 @@ class AuthService {
         email: email,
         password: password,
       );
+         // Check user role is participant, maybeSingle() to prevent Postgrest exceptions if row is missing
+      final data = await _supabase
+          .from('users')
+          .select('user_type')
+          .eq('id', currentUserId!)
+          .maybeSingle();
+
+      // Check the data
+      bool isCollector = data != null && data['user_type'] == 'collector';
+
+      if (!isCollector) {
+        await _supabase.auth.signOut(); // Ensure explicit sign-out
+        return Result.error(Exception('Not collector credentials'));
+      }
+
       return Result.ok(result);
     } on AuthException catch (error) {
       // Supabase error
@@ -47,8 +63,7 @@ class AuthService {
           // Empieza desactivado porque es solicitud de registro
           'is_active': false,
           // Siempre es admin
-          'user_type': 'admin',
-          'is_superadmin': false,
+          'user_type': 'collector',
         },
       );
 

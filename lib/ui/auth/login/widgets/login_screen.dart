@@ -1,3 +1,4 @@
+import 'package:diakron_collectors/data/repositories/auth/auth_repository.dart';
 import 'package:diakron_collectors/l10n/app_localizations.dart';
 import 'package:diakron_collectors/routing/routes.dart';
 import 'package:diakron_collectors/ui/auth/login/view_models/login_viewmodel.dart';
@@ -8,6 +9,7 @@ import 'package:diakron_collectors/ui/core/ui/form_button.dart';
 import 'package:diakron_collectors/ui/core/ui/input_text.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key, required this.viewModel});
@@ -21,7 +23,7 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen>
     with SingleTickerProviderStateMixin {
   final TextEditingController _email = TextEditingController(
-    text: 'adotal1484@gmail.com',
+    text: 'collector@gmail.com',
   );
 
   final TextEditingController _password = TextEditingController(
@@ -33,8 +35,6 @@ class _LoginScreenState extends State<LoginScreen>
   bool _isAnimating = false;
   bool _showForm = true;
   
-  bool _isPasswordObscured = false;
-
   @override
   void initState() {
     super.initState();
@@ -127,18 +127,7 @@ class _LoginScreenState extends State<LoginScreen>
           InputText(
             controller: _password,
             hintText: AppLocalizations.of(context)!.password,
-            obscureText: _isPasswordObscured,
-            suffixIcon: IconButton(
-              icon: Icon(
-                _isPasswordObscured ? Icons.visibility_off : Icons.visibility,
-                color: Colors.grey,
-              ),
-              onPressed: () {
-                setState(() {
-                  _isPasswordObscured = !_isPasswordObscured;
-                });
-              },
-            ),
+           isPassword: true,
           ),
 
           const SizedBox(height: 10),
@@ -321,7 +310,11 @@ class _LoginScreenState extends State<LoginScreen>
       );
 
       // Ve a home
-      if (mounted) context.go(Routes.home);
+
+      // UNLOCK ROUTER
+      if (mounted) {
+        context.read<AuthRepository>().unlockRouter();
+      }
     }
 
     if (widget.viewModel.login.error) {

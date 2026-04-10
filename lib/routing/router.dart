@@ -54,7 +54,7 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
       path: Routes.resetpassword,
       builder: (context, state) {
         final viewModel = ResetPasswordViewmodel(
-          authRepository: context.read<AuthRepository>()
+          authRepository: context.read<AuthRepository>(),
         );
         return ResetPasswordScreen(viewModel: viewModel);
       },
@@ -73,60 +73,37 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
 
 Future<String?> _redirect(BuildContext context, GoRouterState state) async {
   final authRepo = context.read<AuthRepository>();
+
   final bool loggedIn = authRepo.isAuthenticated;
-  
-  // Locations
+  // Auth Check
+  final bool isAtAuthPage = [
+    Routes.login,
+    Routes.signup,
+    Routes.forgotpassword,
+    Routes.resetpassword,
+  ].contains(state.matchedLocation);
+
+  // // Locations
   final bool isAtLogin = state.matchedLocation == Routes.login;
-  final bool isAtReset = state.matchedLocation == Routes.resetpassword;
-  final bool isAtForgot = state.matchedLocation == Routes.forgotpassword;
-  final bool isAtSignup = state.matchedLocation == Routes.signup;
 
-  // 1. HIGHEST PRIORITY: Password Recovery
-  // If Supabase tells us we are in recovery mode, force the reset page.
+  // Password Recovery
   if (authRepo.isRecoveringPassword) {
-    return isAtReset ? null : Routes.resetpassword;
+    return Routes.resetpassword;
   }
 
-  // 2. If not logged in, and not on an "Auth" page (login, signup, forgot), go to Login
+  // If not logged in and not in auth page go to Login
   if (!loggedIn) {
-    if (isAtLogin || isAtForgot || isAtSignup || isAtReset) {
-      return null; 
-    }
-    return Routes.login;
+    return isAtAuthPage ? null : Routes.login;
   }
 
-  // 3. If logged in but trying to hit the login or signup page, go Home
-  // if (loggedIn && (isAtLogin || isAtSignup)) {
-  //   return Routes.home;
-  // }
+  if (authRepo.isVerifyingAuth) {
+    return null;
+  }
+
+  // Logged in in login go Home
+  if (loggedIn && isAtLogin) {
+    return Routes.home;
+  }
 
   return null;
 }
-
-// Future<String?> _redirect(BuildContext context, GoRouterState state) async {
-//   // if the user is not logged in, they need to login
-//   final bool loggedIn = context.read<AuthRepository>().isAuthenticated;
-//   final bool loggingIn = (state.matchedLocation == Routes.login);
-
-//   // Deep Link for Password Reset
-//   // Supabase sends the user to /callback by default;
-//   // check if the incoming path matches your reset route.
-//   final bool isResetting = (state.matchedLocation == Routes.resetpassword);
-
-//   if (context.read<AuthRepository>().isRecoveringPassword) {
-//     return Routes.resetpassword; // Push them to the reset screen
-//   }
-
-//   // If not logged in and its not already on login/reset page, force login
-//   // if (!loggedIn && loggingIn && !isResetting) {
-//   //   return Routes.login;
-//   // }
-
-//   // If logged in and trying to go to login page, send home
-//   // if (loggedIn && loggingIn && !isResetting) {
-//   //   return Routes.home;
-//   // }
-
-//   // No need to redirect at all
-//   return null;
-// }

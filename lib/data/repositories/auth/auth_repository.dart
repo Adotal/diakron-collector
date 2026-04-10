@@ -8,14 +8,26 @@ class AuthRepository extends ChangeNotifier {
   AuthRepository({required AuthService authService})
     : _authService = authService {
     // Listen to Supabase auth changes internally
+
+    _initListener();
+  }
+
+  final AuthService _authService;
+
+  bool get isAuthenticated => (_authService.currentSession != null);
+  bool _isRecoveringPassword = false;
+  bool get isRecoveringPassword => _isRecoveringPassword;
+  // State flag to freeze the router during check of USER TYPE and for permit ANIMATION
+  bool _isVerifyingAuth = false;
+  bool get isVerifyingAuth => _isVerifyingAuth;
+
+  void _initListener() {
     _authService.onAuthStateChange.listen((data) {
       final event = data.event;
 
       if (event == AuthChangeEvent.passwordRecovery) {
         _isRecoveringPassword = true;
       } else if (event == AuthChangeEvent.signedIn) {
-        // ONLY set recovering to false if we aren't already in a recovery flow
-        // or if the session is standard.
         if (!_isRecoveringPassword) {
           _isRecoveringPassword = false;
         }
@@ -27,24 +39,28 @@ class AuthRepository extends ChangeNotifier {
     });
   }
 
-  final AuthService _authService;
+  Future<Result<AuthResponse>> login(String email, String password) async {
+    // LOCK THE ROUTER
+    _isVerifyingAuth = true;
+    notifyListeners();
 
-  bool get isAuthenticated => (_authService.currentSession != null);
-  bool _isRecoveringPassword = false;
-  bool get isRecoveringPassword => _isRecoveringPassword;
-
-  Future<Result<void>> login(String email, String password) async {
     final result = await _authService.signInEmailPassword(
       email: email,
       password: password,
     );
 
-    if (result is Error) {
-      return result;
-    }
+    // WAITS LOGIN SCREEN TO UNLOCK ROUTER AFTER LOGIN ANIMATION
 
-    // Login successful
-    return Result.ok(null);
+    return result;
+  }
+
+  void lockRouter() {
+    _isVerifyingAuth = true;
+  }
+
+  void unlockRouter() {
+    _isVerifyingAuth = false;
+    notifyListeners();
   }
 
   Future<Result<void>> signUp({
@@ -52,8 +68,10 @@ class AuthRepository extends ChangeNotifier {
     required String surnames,
     required String email,
     required String phoneNumber,
-    required String password, 
+    required String password,
   }) async {
+    // Lock router to manually sign in and force user to login and see animation
+    lockRouter();
     final result = await _authService.sigUpEmailPassword(
       username: username,
       surnames: surnames,
@@ -72,6 +90,8 @@ class AuthRepository extends ChangeNotifier {
   }
 
   Future<Result<void>> updatePassword({required String password}) async {
+    // Lock router to manually sign in and force user to login and see animation
+    lockRouter();
     final result = await _authService.updatePassword(password: password);
     _isRecoveringPassword = false;
     if (result is Error<UserResponse>) {

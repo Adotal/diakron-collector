@@ -142,14 +142,14 @@ class _SignupScreenState extends State<SignupScreen> {
                 InputText(
                   controller: _password,
                   hintText: AppLocalizations.of(context)!.password,
-                  obscureText: true,
+                  isPassword: true,
                 ),
                 const SizedBox(height: Dimens.paddingVertical),
                 // Field confirm password
                 InputText(
                   controller: _confirmPassword,
                   hintText: AppLocalizations.of(context)!.confirmPassword,
-                  obscureText: true,
+                  isPassword: true,
                 ),
 
                 const SizedBox(height: 35),
@@ -160,7 +160,7 @@ class _SignupScreenState extends State<SignupScreen> {
                   onPressed: () {
                     widget.viewModel.signup.execute((
                       _name.value.text,
-                      _surnames.value.text,                      
+                      _surnames.value.text,
                       _email.value.text,
                       _phoneNumber.value.text,
                       _password.value.text,

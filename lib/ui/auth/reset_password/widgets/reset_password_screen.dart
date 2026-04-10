@@ -56,13 +56,13 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
             InputText(
               controller: _password,
               hintText: "Nueva contraseña",
-              obscureText: true,
+              isPassword: true,
             ),
             const SizedBox(height: Dimens.paddingVertical),
             InputText(
               controller: _confirmPassword,
               hintText: "Confirmar contraseña",
-              obscureText: true,
+              isPassword: true,
             ),
             const SizedBox(height: Dimens.paddingVertical),
             FormButton(
