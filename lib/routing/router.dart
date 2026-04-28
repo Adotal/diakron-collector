@@ -62,7 +62,7 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
     GoRoute(
       path: Routes.signup,
       builder: (context, state) {
-        final viewModel = SignupViewmodel(
+        final viewModel = SignupViewModel(
           authRepository: context.read<AuthRepository>(),
         );
         return SignupScreen(viewModel: viewModel);
