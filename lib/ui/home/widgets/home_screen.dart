@@ -1,10 +1,6 @@
-
-import 'package:diakron_collectors/data/repositories/auth/auth_repository.dart';
-import 'package:diakron_collectors/ui/auth/logout/view_models/logout_viewmodel.dart';
-import 'package:diakron_collectors/ui/auth/logout/widgets/logout_button.dart';
+import 'package:diakron_collectors/ui/core/themes/colors.dart';
 import 'package:diakron_collectors/ui/home/view_models/home_viewmodel.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key, required this.viewModel});
@@ -16,243 +12,277 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  int _selectedIndex = 0;
-
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
+    final size = MediaQuery.of(context).size;
 
     return Scaffold(
-      backgroundColor: theme.scaffoldBackgroundColor,
-      // AppBar simple para poder volver atrás o cambiar tema si quisieras
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 20.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Puntos
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      backgroundColor: Colors.white,
+      body: SingleChildScrollView(
+        // Permite scroll si la pantalla es pequeña
+        child: Column(
+          children: [
+            // --- SECCIÓN 1: ENCABEZADO (STACK) ---
+            SizedBox(
+              height: size.height * 0.42,
+              child: Stack(
                 children: [
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.confirmation_number,
-                        size: 24,
-                        color: theme.iconTheme.color,
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        "1,195",
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: theme.textTheme.bodyLarge?.color,
+                  Container(
+                    height: size.height * 0.38,
+                    width: double.infinity,
+                    color: const Color(0xFF38761D), // Verde principal
+                  ),
+                  Positioned(
+                    top: size.height * 0.33,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    child: Container(
+                      decoration: const BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(45),
                         ),
                       ),
-                    ],
-                  ),
-
-                  LogoutButton(
-                    viewModel: LogoutViewModel(
-                      authRepository: context.read<AuthRepository>(),
                     ),
                   ),
+                  _buildHeaderText(size),
+                  _buildCharacterImage(size),
                 ],
               ),
-              const SizedBox(height: 20),
+            ),
 
-              // BANNER (Siempre verde, el texto es blanco, no necesita cambios)
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: theme.primaryColor,
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Row(
-                  children: [
-                    Container(
-                      width: 80,
-                      height: 100,
-                      decoration: const BoxDecoration(
-                        color: Colors.white24,
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(
-                        Icons.person_3,
-                        size: 50,
-                        color: Colors.white,
-                      ),
-                    ),
-                    const SizedBox(width: 20),
-                    const Expanded(
-                      child: Text(
-                        "“Consigue grandes recompensas a la vez que ayudas al planeta”",
-                        style: TextStyle(
-                          color: Colors.white, // Siempre blanco sobre verde
-                          fontSize: 16,
-                          height: 1.4,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+            // --- SECCIÓN 2: ÚLTIMOS INGRESOS ---
+            _buildSectionTitle("Tus últimos ingresos."),
+            const SizedBox(height: 15),
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Row(
+                children: [
+                  _incomeCard("+18 MXN"),
+                  _incomeCard("+15 MXN"),
+                  _incomeCard("+15 MXN"),
+                ],
               ),
+            ),
 
-              const SizedBox(height: 30),
+            const SizedBox(height: 40),
 
-              Text(
-                "Tiendas populares",
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: theme.textTheme.bodyLarge?.color,
-                ),
+            // --- SECCIÓN 3: RECOLECCIONES SEMANALES ---
+            _buildSectionTitle("Cantidad de recolecciones de esta semana."),
+            const SizedBox(height: 15),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  _dayColumn("Do.", "1", isFirst: true),
+                  _dayColumn("Lu.", "7"),
+                  _dayColumn("Ma.", "0"),
+                  _dayColumn("Mi.", "2"),
+                  _dayColumn("Ju.", "3"),
+                  _dayColumn("Vi.", "5"),
+                  _dayColumn("Sa.", "0", isLast: true),
+                ],
               ),
-              const SizedBox(height: 15),
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: List.generate(
-                    3,
-                    (index) => _buildStoreCard(context),
-                  ),
-                ),
-              ),
-
-              const SizedBox(height: 25),
-
-              Text(
-                "Nuestras recomendaciones",
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: theme.textTheme.bodyLarge?.color,
-                ),
-              ),
-              const SizedBox(height: 15),
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: List.generate(
-                    3,
-                    (index) => _buildStoreCard(context),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 20),
-            ],
-          ),
+            ),
+            const SizedBox(height: 40),
+          ],
         ),
       ),
+    );
+  }
 
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        backgroundColor: theme.scaffoldBackgroundColor, // Fondo dinámico
-        currentIndex: _selectedIndex,
-        selectedItemColor: theme.primaryColor, // Verde activo
-        unselectedItemColor: Colors.grey,
-        showUnselectedLabels: true,
+  // --- WIDGETS DE APOYO ---
 
-        onTap: (index) {
-          setState(() {
-            _selectedIndex = index;
-          });
+  Widget _buildHeaderText(Size size) {
+    return Positioned(
+      top: size.height * 0.08,
+      left: 25,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            '¿Listo para comenzar\na recolectar?',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 10),
+          const Text(
+            '¡Activa tu ubicación\npara comenzar!',
+            style: TextStyle(color: Colors.white, fontSize: 18),
+          ),
+          const SizedBox(height: 25),
+          _buildToggle(),
+        ],
+      ),
+    );
+  }
 
-          // Start QR Scanner
-          // if (index == 2) {
-          //   Navigator.push(
-          //     context,
-          //     MaterialPageRoute(
-          //       builder: (context) => const MobileScannerScreen(),
-          //     ),
-          //   );
-
-          //   // This version can return a value instead of void and can handle rootNavigator:
-          //   // Navigator.of(context).push(
-          //   //   MaterialPageRoute<void>(
-          //   //     builder: (context) => const MobileScannerScreen(),
-          //   //   ),
-          //   // );
-          // }
-        },
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home_filled),
-            label: "Inicio",
+  Widget _buildToggle() {
+    return Container(
+      width: 200,
+      height: 40,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Row(
+        children: [
+          ListenableBuilder(
+            listenable: widget.viewModel,
+            builder: (context, _) {
+              return Expanded(
+                child: GestureDetector(
+                  onTap: widget.viewModel.toggleActive,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: widget.viewModel.isActive
+                          ? const Color(0xFF00C853)
+                          : Colors.transparent,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    alignment: Alignment.center,
+                    child: Text(
+                      "Activo",
+                      style: TextStyle(
+                        color: widget.viewModel.isActive
+                            ? Colors.white
+                            : Colors.black,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            },
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.article_outlined),
-            label: "Actividad",
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.qr_code_scanner, size: 30),
-            label: "Escaner",
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.shopping_cart_outlined),
-            label: "Tiendas",
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person_outline),
-            label: "Perfil",
+          ListenableBuilder(
+            listenable: widget.viewModel,
+            builder: (context, child) {
+              return Expanded(
+                child: GestureDetector(
+                  onTap: widget.viewModel.toggleActive,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: !widget.viewModel.isActive
+                          ? AppColors.red1
+                          : Colors.transparent,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    alignment: Alignment.center,
+                    child: Text(
+                      "Inactivo",
+                      style: TextStyle(
+                        color: !widget.viewModel.isActive
+                            ? Colors.white
+                            : Colors.black,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            },
           ),
         ],
       ),
     );
   }
 
-  Widget _buildStoreCard(BuildContext context) {
-    // Usamos colores fijos para la tarjeta interna (naranja suave)
-    // porque es parte de la "Marca" de la tienda, no del tema de la app.
-    final theme = Theme.of(context);
-
-    return Container(
-      width: 130,
-      margin: const EdgeInsets.only(right: 15),
-      child: Column(
-        children: [
-          Container(
-            height: 120,
-            width: 130,
-            decoration: BoxDecoration(
-              color: const Color(0xFFFFE0B2),
-              borderRadius: BorderRadius.circular(15),
-              // Borde sutil para que se vea bien en fondo negro
-              border: Border.all(color: Colors.grey.withValues(alpha: 0.3)),
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: const [
-                Icon(Icons.storefront, color: Colors.orange, size: 40),
-                SizedBox(height: 5),
-                Text(
-                  "DOÑA AGUA\n& DON CHILE",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.redAccent,
-                    fontSize: 12,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            "Doña Agua &\nDon Chile",
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 14,
-              // Color dinámico para el texto externo
-              color: theme.textTheme.bodyMedium?.color,
-            ),
-          ),
-        ],
+  Widget _buildCharacterImage(Size size) {
+    return Positioned(
+      top: size.height * 0.1,
+      right: 20,
+      child: SizedBox(
+        width: 120,
+        child: Image.network(
+          'https://www.nicepng.com/png/full/324-3240278_single-people-unhappy-couple-cartoon.png',
+          fit: BoxFit.contain,
+        ),
       ),
+    );
+  }
+
+  Widget _buildSectionTitle(String title) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Text(
+        title,
+        style: const TextStyle(
+          fontSize: 18,
+          fontWeight: FontWeight.w500,
+          color: Colors.black87,
+        ),
+      ),
+    );
+  }
+
+  Widget _incomeCard(String amount) {
+    return Container(
+      width: 110,
+      height: 110,
+      margin: const EdgeInsets.only(right: 15),
+      decoration: BoxDecoration(
+        color: const Color(0xFF2E6118),
+        borderRadius: BorderRadius.circular(15),
+      ),
+      alignment: Alignment.center,
+      child: Text(
+        amount,
+        style: const TextStyle(
+          color: Colors.white,
+          fontSize: 16,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+    );
+  }
+
+  Widget _dayColumn(
+    String day,
+    String count, {
+    bool isFirst = false,
+    bool isLast = false,
+  }) {
+    return Column(
+      children: [
+        Container(
+          width: 45,
+          height: 45,
+          decoration: BoxDecoration(
+            color: const Color(0xFF4C9127), // Verde de los días
+            borderRadius: BorderRadius.circular(5),
+          ),
+          alignment: Alignment.center,
+          child: Text(
+            day,
+            style: const TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+        const SizedBox(height: 8),
+        Container(
+          width: 45,
+          height: 45,
+          decoration: BoxDecoration(
+            color: const Color(0xFFE8E9A1), // Color crema de los números
+            borderRadius: BorderRadius.circular(5),
+          ),
+          alignment: Alignment.center,
+          child: Text(
+            count,
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          ),
+        ),
+      ],
     );
   }
 }

@@ -11,6 +11,7 @@ import 'package:diakron_collectors/ui/auth/sigunp/view_models/signup_viewmodel.d
 import 'package:diakron_collectors/ui/auth/sigunp/widgets/signup_screen.dart';
 import 'package:diakron_collectors/ui/home/view_models/home_viewmodel.dart';
 import 'package:diakron_collectors/ui/home/widgets/home_screen.dart';
+import 'package:diakron_collectors/ui/main/widgets/main_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -30,6 +31,82 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
         );
         return LoginScreen(viewModel: viewModel);
       },
+    ),
+
+    ShellRoute(
+      builder: (context, state, child) {
+        return MainScreen(child: child);
+      },
+      routes: [
+        GoRoute(
+          path: Routes.home,
+          pageBuilder: (context, state) {
+            return CustomTransitionPage(
+              key: state.pageKey,
+              // Wrap the Home branch in the Provider so it stays alive during navigation
+              child: Builder(
+                builder: (context) {
+                  // Use context.read()
+                  final viewModel = HomeViewModel(
+                    authRepository: context.read<AuthRepository>(),
+                  );
+                  return HomeScreen(viewModel: viewModel);
+                },
+              ),
+              transitionsBuilder:
+                  (context, animation, secondaryAnimation, child) {
+                    return FadeTransition(opacity: animation, child: child);
+                  },
+            );
+          },
+        ),
+        GoRoute(
+          path: Routes.activity,
+          builder: (context, state) {
+            // final viewModel = ScannerViewModel(
+            //   authRepository: context.read<AuthRepository>(),
+            //   participantRepository: context.read<ParticipantRepository>(),
+            // );
+            // return ScannerScreen(viewModel: viewModel);
+            return Scaffold(body: Text('activity'));
+          },
+        ),
+        GoRoute(
+          path: Routes.scanner,
+          builder: (context, state) {
+            // final viewModel = ScannerViewModel(
+            //   authRepository: context.read<AuthRepository>(),
+            //   participantRepository: context.read<ParticipantRepository>(),
+            // );
+            // return ScannerScreen(viewModel: viewModel);
+            return Scaffold(body: Text('scanner'),);
+          },
+        ),
+
+        GoRoute(
+          path: Routes.map,
+          builder: (context, state) {
+            // final viewModel = ScannerViewModel(
+            //   authRepository: context.read<AuthRepository>(),
+            //   participantRepository: context.read<ParticipantRepository>(),
+            // );
+            // return ScannerScreen(viewModel: viewModel);
+            return Scaffold(body: Center(child: Text('map')),);
+          },
+        ),
+
+        GoRoute(
+          path: Routes.profile,
+          builder: (context, state) {
+            // final viewModel = ScannerViewModel(
+            //   authRepository: context.read<AuthRepository>(),
+            //   participantRepository: context.read<ParticipantRepository>(),
+            // );
+            // return ScannerScreen(viewModel: viewModel);
+            return Scaffold(body: Text('profile'),);
+          },
+        ),
+      ],
     ),
     GoRoute(
       path: Routes.home,
