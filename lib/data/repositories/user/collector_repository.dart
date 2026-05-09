@@ -1,0 +1,61 @@
+import 'package:diakron_collectors/data/services/database_service.dart';
+import 'package:diakron_collectors/models/segregator/segregator.dart';
+import 'package:diakron_collectors/models/users/collector.dart';
+import 'package:diakron_collectors/utils/result.dart';
+import 'package:logger/logger.dart';
+
+class CollectorRepository {
+  CollectorRepository({required DatabaseService databaseService})
+    : _databaseService = databaseService;
+
+  final DatabaseService _databaseService;
+  final _logger = Logger();
+  Collector? _cachedCollector;
+
+  Future<Result<Collector>> getCollector({
+    bool forceRefresh = false,
+  }) async {
+    if (_cachedCollector != null && !forceRefresh) {
+      _logger.i('Returned cached ${_cachedCollector.toString()}');
+      return Future.value(Result.ok(_cachedCollector!));
+    }
+    final result = await _databaseService.getCollector();
+    switch (result) {
+      case Ok<Map<String, dynamic>>():
+        _cachedCollector = Collector.fromJson(result.value);
+
+        _logger.i('Returned refreshed ${_cachedCollector.toString()}');
+        return Result.ok(_cachedCollector!);
+      case Error<Map<String, dynamic>>():
+        return Result.error(result.error);
+    }
+  }
+
+  void clear() {
+    _cachedCollector = null;
+  }
+
+  // THE NEXT CODE IS INTENDED FOR RETRIEVING COUPONS, STORES AND OTHER INFO, IT MUST BE MOVED TO SEPARATE REPOSITORIES
+
+  Future<Result<List<Segregator>>> fetchSegregators() async {
+    try {
+      final result = await _databaseService.fetchTable(
+        table: 'full_segregators',
+      );
+
+      switch (result) {
+        case Ok<List<Map<String, dynamic>>>():
+          List<Segregator> segregators = (result.value as List)
+              .map((json) => Segregator.fromJson(json))
+              .toList();
+
+          return Result.ok(segregators);
+
+        case Error<List<Map<String, dynamic>>>():
+          return Result.error(result.error);
+      }
+    } on Exception catch (error) {
+      return Result.error(error);
+    }
+  }
+}

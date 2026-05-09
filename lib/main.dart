@@ -1,5 +1,7 @@
 import 'package:diakron_collectors/data/repositories/auth/auth_repository.dart';
+import 'package:diakron_collectors/data/repositories/user/collector_repository.dart';
 import 'package:diakron_collectors/data/services/auth_service.dart';
+import 'package:diakron_collectors/data/services/database_service.dart';
 import 'package:diakron_collectors/l10n/app_localizations.dart';
 import 'package:diakron_collectors/routing/router.dart';
 import 'package:diakron_collectors/ui/core/themes/colors.dart';
@@ -10,8 +12,6 @@ import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 Future<void> main() async {
-
-
   // To load the .env file contents into dotenv.
   await dotenv.load(fileName: ".env");
 
@@ -29,6 +29,12 @@ Future<void> main() async {
       providers: [
         // Provider(create: (context) => AuthService()),
         Provider<AuthService>(create: (_) => AuthService()),
+        Provider<DatabaseService>(create: (_) => DatabaseService()),
+        Provider<CollectorRepository>(
+          create: (context) => CollectorRepository(
+            databaseService: context.read<DatabaseService>(),
+          ),
+        ),
         // AuthRepository is a ChangeNotifier, so we MUST use ChangeNotifierProxyProvider
         ChangeNotifierProxyProvider<AuthService, AuthRepository>(
           create: (context) =>

@@ -1,5 +1,7 @@
 // Routes manager
 import 'package:diakron_collectors/data/repositories/auth/auth_repository.dart';
+import 'package:diakron_collectors/data/repositories/map/map_repository_impl.dart';
+import 'package:diakron_collectors/data/repositories/user/collector_repository.dart';
 import 'package:diakron_collectors/routing/routes.dart';
 import 'package:diakron_collectors/ui/auth/forgot_password/view_models/forgot_password_viewmodel.dart';
 import 'package:diakron_collectors/ui/auth/forgot_password/widgets/forgot_password_screen.dart';
@@ -12,6 +14,8 @@ import 'package:diakron_collectors/ui/auth/sigunp/widgets/signup_screen.dart';
 import 'package:diakron_collectors/ui/home/view_models/home_viewmodel.dart';
 import 'package:diakron_collectors/ui/home/widgets/home_screen.dart';
 import 'package:diakron_collectors/ui/main/widgets/main_screen.dart';
+import 'package:diakron_collectors/ui/map/view_models/map_viewmodel.dart';
+import 'package:diakron_collectors/ui/map/widgets/map_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -83,15 +87,14 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
           },
         ),
 
-        GoRoute(
+          GoRoute(
           path: Routes.map,
           builder: (context, state) {
-            // final viewModel = ScannerViewModel(
-            //   authRepository: context.read<AuthRepository>(),
-            //   participantRepository: context.read<ParticipantRepository>(),
-            // );
-            // return ScannerScreen(viewModel: viewModel);
-            return Scaffold(body: Center(child: Text('map')),);
+            final viewModel = MapViewModel(
+              mapRepository: MapRepositoryImpl(),
+              collectorRepository: context.read<CollectorRepository>(),
+            );
+            return MapScreen(viewModel: viewModel);
           },
         ),
 

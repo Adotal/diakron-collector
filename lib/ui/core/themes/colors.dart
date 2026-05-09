@@ -5,8 +5,11 @@
 import 'package:flutter/material.dart';
 
 abstract final class AppColors {
-
-static const greenDiakron1 = Color(0xFF387C11);
+  static const greenDiakron1 = Color(0xFF387C11); // Original
+  //static const greenDiakron1 = Color(0xFF2E7D32);
+  static const greenDiakron2 = Color(0xFF4CAF50);
+  static const greenDiakron3 = Color(0xFF81C784);
+  static const backgroundDiakron = Color(0xFFF8F9FA);
 
   static const black1 = Color(0xFF101010);
   static const white1 = Color(0xFFFFF7FA);
