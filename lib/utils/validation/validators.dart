@@ -64,4 +64,16 @@ class Validators {
     final bool isNumber = RegExp(r'^[1-9]\d*$').hasMatch(value ?? '');
     return isNumber ? null : 'Debes escribir un número mayor a cero';
   }
+
+
+  static String? phoneNumber(String? value){
+    
+    final emptyField = required(value);
+    if (emptyField != null) {
+      return emptyField;
+    }
+  
+    final bool isNumber = RegExp(r'^\d{10}$').hasMatch(value ?? '');
+    return isNumber ? null : 'Número telefónico de 10 dígitos';
+  }
 }

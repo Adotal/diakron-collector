@@ -23,21 +23,21 @@ class _SignupScreenState extends State<SignupScreen> {
   final _formKey = GlobalKey<FormState>();
 
   // Controllers
-  final TextEditingController _name = TextEditingController(text: 'StoreName');
+  final TextEditingController _name = TextEditingController(text: 'John');
   final TextEditingController _surnames = TextEditingController(
-    text: 'StoreSurname',
+    text: 'Doe Coll',
   );
   final TextEditingController _email = TextEditingController(
-    text: 'store@gmail.com',
+    text: 'collector1@gmail.com',
   );
   final TextEditingController _phoneNumber = TextEditingController(
     text: '1234567890',
   );
   final TextEditingController _password = TextEditingController(
-    text: '123456789',
+    text: '123456789.aA',
   );
   final TextEditingController _confirmPassword = TextEditingController(
-    text: '123456789',
+    text: '123456789.aA',
   );
 
   @override
@@ -145,7 +145,7 @@ class _SignupScreenState extends State<SignupScreen> {
                   CustomTextFormField(
                     controller: _phoneNumber,
                     labelText: AppLocalizations.of(context)!.phoneNumber,
-                    validator: Validators.required,
+                    validator: Validators.phoneNumber,                    
                   ),
                   const SizedBox(height: Dimens.paddingVertical),
 
