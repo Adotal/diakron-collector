@@ -20,6 +20,8 @@ class AuthRepository extends ChangeNotifier {
   // State flag to freeze the router during check of USER TYPE and for permit ANIMATION
   bool _isVerifyingAuth = false;
   bool get isVerifyingAuth => _isVerifyingAuth;
+  Session? get currentSession => _authService.currentSession;
+
 
   void _initListener() {
     _authService.onAuthStateChange.listen((data) {
