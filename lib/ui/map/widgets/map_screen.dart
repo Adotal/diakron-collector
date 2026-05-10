@@ -1,13 +1,16 @@
 import 'dart:typed_data';
 import 'package:diakron_collectors/models/segregator/segregator.dart';
+import 'package:diakron_collectors/routing/routes.dart';
 import 'package:diakron_collectors/ui/core/themes/colors.dart';
 import 'package:diakron_collectors/ui/core/ui/custom_screen.dart';
+import 'package:diakron_collectors/ui/core/ui/form_button.dart';
 import 'package:diakron_collectors/ui/map/view_models/map_viewmodel.dart';
 import 'package:diakron_collectors/ui/map/widgets/location_card.dart';
 import 'package:diakron_collectors/ui/map/widgets/map_controls.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:go_router/go_router.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 
 class MapScreen extends StatefulWidget {
@@ -51,6 +54,15 @@ class _MapScreenState extends State<MapScreen> {
     return CustomScreen(
       // El fondo de la pantalla ahora es verde
       title: 'Mapa',
+      actions: [
+        IconButton(
+          icon: const Icon(Icons.info_outline, color: Colors.white),
+          tooltip: 'Ver Leyenda',
+          onPressed: () {
+            _showLegendDialog(context);
+          },
+        ),
+      ],
       child: ListenableBuilder(
         listenable: widget.viewModel,
         builder: (context, _) {
@@ -178,24 +190,55 @@ class _MapScreenState extends State<MapScreen> {
     final locations = widget.viewModel.segregators;
     if (locations.isEmpty) return;
 
-    // Load the image from assets
-    final ByteData bytesImgActive = await rootBundle.load(
-      'assets/symbols/recycling.png',
-    );
-    final ByteData bytesImgInactive = await rootBundle.load(
+    // 1. Load all 5 color variations from assets
+    final Uint8List imgGreen = (await rootBundle.load(
+      'assets/symbols/recycling_green.png',
+    )).buffer.asUint8List();
+    final Uint8List imgYellow = (await rootBundle.load(
+      'assets/symbols/recycling_yellow.png',
+    )).buffer.asUint8List();
+    final Uint8List imgOrange = (await rootBundle.load(
+      'assets/symbols/recycling_orange.png',
+    )).buffer.asUint8List();
+    final Uint8List imgRed = (await rootBundle.load(
       'assets/symbols/recycling_red.png',
-    );
-    final Uint8List imageDataActive = bytesImgActive.buffer.asUint8List();
-    final Uint8List imageDataInactive = bytesImgInactive.buffer.asUint8List();
+    )).buffer.asUint8List();
+    final Uint8List imgGray = (await rootBundle.load(
+      'assets/symbols/recycling_gray.png',
+    )).buffer.asUint8List();
 
     for (var loc in locations) {
+      if (loc.latitude == null || loc.longitude == null) continue;
       final point = Point(coordinates: Position(loc.longitude!, loc.latitude!));
 
+      Uint8List selectedImage;
+      // Determine which image to use
+      if (!loc.isActive) {
+        selectedImage = imgGray;
+      } else {
+        // Count how many bins are above 80%
+        // Note: Make sure 'fillingPercentage' matches your BinModel property name
+        int criticalBinsCount = loc.bins
+            .where((bin) => (bin.fillingPercentage > 80))
+            .length;
+
+        if (criticalBinsCount == 0) {
+          selectedImage = imgGreen;
+        } else if (criticalBinsCount == 1) {
+          selectedImage = imgYellow;
+        } else if (criticalBinsCount == 2) {
+          selectedImage = imgOrange;
+        } else {
+          selectedImage = imgRed; // 3 or more bins mo
+        }
+      }
+
+      //Create the annotation
       final annotation = await pointManager!.create(
         PointAnnotationOptions(
           geometry: point,
-          image: loc.isActive ? imageDataActive : imageDataInactive, 
-          iconSize: 0.1, // Ajusta el tamaño de tu pin aquí
+          image: selectedImage,
+          iconSize: 0.1,
         ),
       );
       // Guardamos la relación: ID del Pin -> Datos del Segregador
@@ -281,10 +324,100 @@ class _MapScreenState extends State<MapScreen> {
                     .toList(),
               ),
               const SizedBox(height: 30),
+              SizedBox(
+                width: double.infinity,
+                height: 55,
+                child: ElevatedButton(
+                  onPressed: () => context.go(Routes.scanner),
+
+                  style: ElevatedButton.styleFrom(
+                    // minimumSize: const Size(150, 60),
+                    backgroundColor: AppColors.greenDiakron1,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                  ),
+                  child: Text('RECOLECTAR'),
+                ),
+              ),
+              const SizedBox(height: 20),
             ],
           ),
         );
       },
+    );
+  }
+
+  // Función principal para mostrar el diálogo
+  void _showLegendDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text(
+            'Leyenda del Mapa',
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+          content: SingleChildScrollView(
+            // Por si la pantalla es muy pequeña
+            child: Column(
+              mainAxisSize: MainAxisSize
+                  .min, // Para que el diálogo no ocupe toda la pantalla
+              children: [
+                _buildLegendItem(
+                  'assets/symbols/recycling_green.png',
+                  '0 botes > 80% (Normal)',
+                ),
+                const SizedBox(height: 15),
+                _buildLegendItem(
+                  'assets/symbols/recycling_yellow.png',
+                  '1 bote > 80% (Atención)',
+                ),
+                const SizedBox(height: 15),
+                _buildLegendItem(
+                  'assets/symbols/recycling_orange.png',
+                  '2 botes > 80% (Crítico)',
+                ),
+                const SizedBox(height: 15),
+                _buildLegendItem(
+                  'assets/symbols/recycling_red.png',
+                  '3+ botes > 80% (Muy Crítico)',
+                ),
+                const SizedBox(height: 15),
+                _buildLegendItem(
+                  'assets/symbols/recycling_gray.png',
+                  'Inactivo / Sin conexión',
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(), // Cierra el diálogo
+              child: const Text('Cerrar'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  // Widget auxiliar para crear cada fila de la leyenda (Imagen + Texto)
+  Widget _buildLegendItem(String imagePath, String description) {
+    return Row(
+      children: [
+        // Asegúrate de que las imágenes existan en tu pubspec.yaml
+        Image.asset(
+          imagePath,
+          width: 35, // Ajusta el tamaño de la imagen en la leyenda
+          height: 35,
+        ),
+        const SizedBox(width: 15),
+        Expanded(
+          child: Text(description, style: const TextStyle(fontSize: 16)),
+        ),
+      ],
     );
   }
 }

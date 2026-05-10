@@ -80,7 +80,7 @@ class LocationService {
     required String userId, 
     required String fcmToken
   }) async {
-    final url = Uri.parse('https://diakron-backend.onrender.com/update-location');
+    final url = Uri.parse('https://diakron-backend.onrender.com/update-location');    
     
     try {
       final response = await http.post(
