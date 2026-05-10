@@ -1,6 +1,11 @@
+import 'dart:convert';
+
+import 'package:diakron_collectors/routing/router.dart';
+import 'package:diakron_collectors/routing/routes.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:go_router/go_router.dart';
 
 // 1. TOP-LEVEL function (Debe estar fuera de cualquier clase)
 @pragma('vm:entry-point')
@@ -52,6 +57,7 @@ class NotificationService {
           id: 1,
           title: notification.title,
           body: notification.body,
+          payload: jsonEncode(message.data),
           notificationDetails: NotificationDetails(
             android: AndroidNotificationDetails(
               _channel.id,
@@ -75,11 +81,21 @@ class NotificationService {
 
     // Manejar tap en notificación (Background -> Foreground)
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-      if (message.data['action'] == 'OPEN_SEGREGATOR_DETAILS') {
-        // Aquí puedes usar tu router para navegar, ej: 
-        print("\n\n\n\nAbrir mapa u otra acción");        
-      }
+      _handleNotificationTap(message);
     });
+  }
+
+  // Extraemos la lógica a un método para reutilizarla
+  static void _handleNotificationTap(RemoteMessage message) {
+    if (message.data['action'] == 'OPEN_SEGREGATOR_DETAILS' ||
+        message.data['action'] == 'OPEN_MAP') {
+      // NAVEGAR USANDO LA LLAVE GLOBAL
+      final context = rootNavigatorKey.currentContext;
+
+      if (context != null) {
+        context.go(Routes.map);
+      } 
+    }
   }
 
   // Método para obtener el token que le enviaremos a Node.js

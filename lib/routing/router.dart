@@ -23,8 +23,10 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
+final GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>();
 GoRouter router(AuthRepository authRepository) => GoRouter(
   initialLocation: Routes.home,
+  navigatorKey: rootNavigatorKey,
   debugLogDiagnostics: true, // TESTING
   refreshListenable: authRepository,
   redirect: _redirect,
@@ -56,7 +58,7 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
                   // Use context.read()
                   final viewModel = HomeViewModel(
                     authRepository: context.read<AuthRepository>(),
-                    locationService: context.read<LocationService>()
+                    locationService: context.read<LocationService>(),
                   );
                   return HomeScreen(viewModel: viewModel);
                 },
@@ -90,7 +92,7 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
           },
         ),
 
-          GoRoute(
+        GoRoute(
           path: Routes.map,
           builder: (context, state) {
             final viewModel = MapViewModel(
@@ -109,7 +111,7 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
             //   participantRepository: context.read<ParticipantRepository>(),
             // );
             // return ScannerScreen(viewModel: viewModel);
-            return Scaffold(body: Text('profile'),);
+            return Scaffold(body: Text('profile'));
           },
         ),
       ],

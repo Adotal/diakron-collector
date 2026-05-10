@@ -15,6 +15,7 @@ class HomeViewModel extends ChangeNotifier {
        _locationService = locationService {
     // Command0 is used because logout doesn't require input parameters
     logout = Command0<void>(_logout);
+    setTrackingStatus = Command1<void, bool>(_setTrackingStatus);
   }
   // Estado para controlar el toggle (false = Inactivo, true = Activo)
   bool _isActive = false;
@@ -27,52 +28,51 @@ class HomeViewModel extends ChangeNotifier {
   // Nuevo estado: Para mostrar un loading mientras carga el GPS/Token
   bool _isLoading = false;
   bool get isLoading => _isLoading;
+  late final Command1 setTrackingStatus;
 
   // Centralizamos la lógica de encendido y apagado
-  Future<void> setTrackingStatus(bool enable) async {
+  Future<Result<void>> _setTrackingStatus(bool enable) async {
     // Si ya está en el estado deseado, no hacemos nada
-    if (_isActive == enable) return;
+    if (_isActive == enable) return Result.ok(null);
 
-    _isLoading = true;
-    notifyListeners(); // Actualiza la UI para mostrar un posible loading
+    try {
+      _isLoading = true;
+      notifyListeners(); // Actualiza la UI para mostrar un posible loading
 
-    if (enable) {
-      // INTENTAR ENCENDER EL RASTREO
-      String? token = await NotificationService.getToken();
+      if (enable) {
+        // INTENTAR ENCENDER EL RASTREO
+        String? token = await NotificationService.getToken();
 
-      if (token != null) {
-        
-        String userId = _authRepository.userId;
+        if (token != null) {
+          String userId = _authRepository.userId;
 
-        bool success = await _locationService.startTracking(
-          userId: userId,
-          fcmToken: token,
-        );
+          bool success = await _locationService.startTracking(
+            userId: userId,
+            fcmToken: token,
+          );
 
-        if (success) {
-          _isActive = true;
-          _logger.i("¡Rastreo iniciado en segundo plano!");
-        } else {
-          // Si el usuario denegó permisos, success es false.
-          // Lo mantenemos inactivo.
-          _isActive = false;
-          _logger.i("No se pudo iniciar el rastreo (sin permisos)");
+          if (success) {
+            _isActive = true;
+            _logger.i("¡Rastreo iniciado en segundo plano!");
+          } else {
+            // Si el usuario denegó permisos, success es false.
+            // Lo mantenemos inactivo.
+            _isActive = false;
+            _logger.i("No se pudo iniciar el rastreo (sin permisos)");
+            return Result.error(Exception("No location active "));
+          }
         }
+      } else {
+        // APAGAR EL RASTREO
+        _locationService.stopTracking();
+        _isActive = false;
+        _logger.i("¡Rastreo detenido!");
       }
-    } else {
-      // APAGAR EL RASTREO
-      _locationService.stopTracking();
-      _isActive = false;
-      _logger.i("¡Rastreo detenido!");
+      return Result.ok(null);
+    } finally {
+      _isLoading = false;
+      notifyListeners();
     }
-
-    _isLoading = false;
-    notifyListeners(); // Actualiza la UI con el resultado final
-  }
-
-  void toggleActive() {
-    _isActive = !_isActive;
-    notifyListeners();
   }
 
   Future<Result<void>> _logout() async {

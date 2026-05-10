@@ -6,10 +6,12 @@ import 'package:diakron_collectors/data/services/location_service.dart';
 import 'package:diakron_collectors/data/services/notification_service.dart';
 import 'package:diakron_collectors/l10n/app_localizations.dart';
 import 'package:diakron_collectors/routing/router.dart';
+import 'package:diakron_collectors/routing/routes.dart';
 import 'package:diakron_collectors/ui/core/themes/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -31,13 +33,11 @@ Future<void> main() async {
   );
 
   // Initialize Firebase
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-    );
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
-    // Inicializa toda la lógica de Notificaciones
+  // Inicializa toda la lógica de Notificaciones
   await NotificationService.initialize();
-
+    
   runApp(
     MultiProvider(
       providers: [

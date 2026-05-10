@@ -1,4 +1,5 @@
 import 'package:diakron_collectors/ui/core/themes/colors.dart';
+import 'package:diakron_collectors/ui/core/ui/custom_alert_dialog.dart';
 import 'package:diakron_collectors/ui/home/view_models/home_viewmodel.dart';
 import 'package:flutter/material.dart';
 
@@ -8,12 +9,34 @@ class HomeScreen extends StatefulWidget {
   final HomeViewModel viewModel;
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  State<HomeScreen> createState() => _HomeScreenState();  
 }
 
 class _HomeScreenState extends State<HomeScreen> {
   @override
+  void initState() {
+    super.initState();
+    widget.viewModel.setTrackingStatus.addListener(_onSetTracking);
+  }
+
+  @override
+  void didUpdateWidget(covariant HomeScreen oldWidget) {    
+    super.didUpdateWidget(oldWidget);
+
+    oldWidget.viewModel.setTrackingStatus.removeListener(_onSetTracking);
+    widget.viewModel.setTrackingStatus.addListener(_onSetTracking);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+
+    widget.viewModel.setTrackingStatus.removeListener(_onSetTracking);
+  }
+
+  @override
   Widget build(BuildContext context) {
+    
     final size = MediaQuery.of(context).size;
 
     return Scaffold(
@@ -25,7 +48,7 @@ class _HomeScreenState extends State<HomeScreen> {
             SizedBox(
               height: size.height * 0.42,
               child: Stack(
-                children: [
+                children: [                  
                   Container(
                     height: size.height * 0.38,
                     width: double.infinity,
@@ -133,13 +156,14 @@ class _HomeScreenState extends State<HomeScreen> {
       child: ListenableBuilder(
         listenable: widget.viewModel,
         builder: (context, _) {
-          // Opcional: Puedes mostrar un indicador de carga si está iniciando el GPS
+          // Mostrar un indicador de carga si está iniciando el GPS
           if (widget.viewModel.isLoading) {
             return const Center(
               child: SizedBox(
-                height: 20, width: 20, 
-                child: CircularProgressIndicator(strokeWidth: 2)
-              )
+                height: 20,
+                width: 20,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              ),
             );
           }
 
@@ -149,7 +173,7 @@ class _HomeScreenState extends State<HomeScreen> {
               Expanded(
                 child: GestureDetector(
                   // Iniciamos rastreo
-                  onTap: () => widget.viewModel.setTrackingStatus(true),
+                  onTap: () => widget.viewModel.setTrackingStatus.execute(true),
                   child: Container(
                     decoration: BoxDecoration(
                       color: widget.viewModel.isActive
@@ -174,11 +198,12 @@ class _HomeScreenState extends State<HomeScreen> {
               Expanded(
                 child: GestureDetector(
                   // Simplemente apagamos
-                  onTap: () => widget.viewModel.setTrackingStatus(false),
+                  onTap: () => widget.viewModel.setTrackingStatus.execute(false),
                   child: Container(
                     decoration: BoxDecoration(
                       color: !widget.viewModel.isActive
-                          ? AppColors.red1 // Asegúrate de importar tus colores
+                          ? AppColors
+                                .red1 // Asegúrate de importar tus colores
                           : Colors.transparent,
                       borderRadius: BorderRadius.circular(20),
                     ),
@@ -201,6 +226,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
+
   Widget _buildCharacterImage(Size size) {
     return Positioned(
       top: size.height * 0.1,
@@ -290,6 +316,27 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
       ],
+    );
+  }
+
+  void _onSetTracking(){
+    if(widget.viewModel.setTrackingStatus.error){
+      widget.viewModel.setTrackingStatus.clearResult;
+      _showNotLocationActive();
+    }
+  }
+
+  void _showNotLocationActive() {
+    showDialog(
+      context: context,
+      builder: (context) => CustomAlertDialog(
+        title: 'Activar ubicación',
+        content:
+            'Debes activar la ubicación para recibir notificación de segregadores llenos!',
+        actionText: 'Activar',
+        // onPressed: ,
+        actionTextColor: const Color.fromARGB(255, 0, 54, 0),
+      ),
     );
   }
 }
