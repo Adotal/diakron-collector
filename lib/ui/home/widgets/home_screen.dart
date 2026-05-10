@@ -233,8 +233,8 @@ class _HomeScreenState extends State<HomeScreen> {
       right: 20,
       child: SizedBox(
         width: 120,
-        child: Image.network(
-          'https://www.nicepng.com/png/full/324-3240278_single-people-unhappy-couple-cartoon.png',
+        child: Image.asset(          
+          'assets/images/standing_man.png',
           fit: BoxFit.contain,
         ),
       ),
