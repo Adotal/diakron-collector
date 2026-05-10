@@ -1,12 +1,18 @@
 // home_viewmodel.dart
 import 'package:diakron_collectors/data/repositories/auth/auth_repository.dart';
+import 'package:diakron_collectors/data/services/location_service.dart';
+import 'package:diakron_collectors/data/services/notification_service.dart';
 import 'package:diakron_collectors/utils/command.dart';
 import 'package:diakron_collectors/utils/result.dart';
 import 'package:flutter/foundation.dart';
+import 'package:logger/web.dart';
 
 class HomeViewModel extends ChangeNotifier {
-  HomeViewModel({required AuthRepository authRepository})
-    : _authRepository = authRepository {
+  HomeViewModel({
+    required AuthRepository authRepository,
+    required LocationService locationService,
+  }) : _authRepository = authRepository,
+       _locationService = locationService {
     // Command0 is used because logout doesn't require input parameters
     logout = Command0<void>(_logout);
   }
@@ -15,7 +21,54 @@ class HomeViewModel extends ChangeNotifier {
   bool get isActive => _isActive;
 
   final AuthRepository _authRepository;
+  final LocationService _locationService;
   late Command0<void> logout;
+  final _logger = Logger();
+  // Nuevo estado: Para mostrar un loading mientras carga el GPS/Token
+  bool _isLoading = false;
+  bool get isLoading => _isLoading;
+
+  // Centralizamos la lógica de encendido y apagado
+  Future<void> setTrackingStatus(bool enable) async {
+    // Si ya está en el estado deseado, no hacemos nada
+    if (_isActive == enable) return;
+
+    _isLoading = true;
+    notifyListeners(); // Actualiza la UI para mostrar un posible loading
+
+    if (enable) {
+      // INTENTAR ENCENDER EL RASTREO
+      String? token = await NotificationService.getToken();
+
+      if (token != null) {
+        
+        String userId = _authRepository.userId;
+
+        bool success = await _locationService.startTracking(
+          userId: userId,
+          fcmToken: token,
+        );
+
+        if (success) {
+          _isActive = true;
+          _logger.i("¡Rastreo iniciado en segundo plano!");
+        } else {
+          // Si el usuario denegó permisos, success es false.
+          // Lo mantenemos inactivo.
+          _isActive = false;
+          _logger.i("No se pudo iniciar el rastreo (sin permisos)");
+        }
+      }
+    } else {
+      // APAGAR EL RASTREO
+      _locationService.stopTracking();
+      _isActive = false;
+      _logger.i("¡Rastreo detenido!");
+    }
+
+    _isLoading = false;
+    notifyListeners(); // Actualiza la UI con el resultado final
+  }
 
   void toggleActive() {
     _isActive = !_isActive;

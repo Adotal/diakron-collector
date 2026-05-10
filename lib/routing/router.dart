@@ -2,6 +2,7 @@
 import 'package:diakron_collectors/data/repositories/auth/auth_repository.dart';
 import 'package:diakron_collectors/data/repositories/map/map_repository_impl.dart';
 import 'package:diakron_collectors/data/repositories/user/collector_repository.dart';
+import 'package:diakron_collectors/data/services/location_service.dart';
 import 'package:diakron_collectors/routing/routes.dart';
 import 'package:diakron_collectors/ui/auth/forgot_password/view_models/forgot_password_viewmodel.dart';
 import 'package:diakron_collectors/ui/auth/forgot_password/widgets/forgot_password_screen.dart';
@@ -55,6 +56,7 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
                   // Use context.read()
                   final viewModel = HomeViewModel(
                     authRepository: context.read<AuthRepository>(),
+                    locationService: context.read<LocationService>()
                   );
                   return HomeScreen(viewModel: viewModel);
                 },
@@ -111,16 +113,6 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
           },
         ),
       ],
-    ),
-    GoRoute(
-      path: Routes.home,
-      builder: (context, state) {
-        return HomeScreen(
-          viewModel: HomeViewModel(
-            authRepository: context.read<AuthRepository>(),
-          ),
-        );
-      },
     ),
     GoRoute(
       path: Routes.forgotpassword,

@@ -22,7 +22,6 @@ class _HomeScreenState extends State<HomeScreen> {
         // Permite scroll si la pantalla es pequeña
         child: Column(
           children: [
-            // --- SECCIÓN 1: ENCABEZADO (STACK) ---
             SizedBox(
               height: size.height * 0.42,
               child: Stack(
@@ -30,7 +29,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   Container(
                     height: size.height * 0.38,
                     width: double.infinity,
-                    color: const Color(0xFF38761D), // Verde principal
+                    color: const Color(0xFF38761D),
                   ),
                   Positioned(
                     top: size.height * 0.33,
@@ -131,14 +130,26 @@ class _HomeScreenState extends State<HomeScreen> {
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
       ),
-      child: Row(
-        children: [
-          ListenableBuilder(
-            listenable: widget.viewModel,
-            builder: (context, _) {
-              return Expanded(
+      child: ListenableBuilder(
+        listenable: widget.viewModel,
+        builder: (context, _) {
+          // Opcional: Puedes mostrar un indicador de carga si está iniciando el GPS
+          if (widget.viewModel.isLoading) {
+            return const Center(
+              child: SizedBox(
+                height: 20, width: 20, 
+                child: CircularProgressIndicator(strokeWidth: 2)
+              )
+            );
+          }
+
+          return Row(
+            children: [
+              // BOTÓN ACTIVO
+              Expanded(
                 child: GestureDetector(
-                  onTap: widget.viewModel.toggleActive,
+                  // Iniciamos rastreo
+                  onTap: () => widget.viewModel.setTrackingStatus(true),
                   child: Container(
                     decoration: BoxDecoration(
                       color: widget.viewModel.isActive
@@ -158,19 +169,16 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                 ),
-              );
-            },
-          ),
-          ListenableBuilder(
-            listenable: widget.viewModel,
-            builder: (context, child) {
-              return Expanded(
+              ),
+              // BOTÓN INACTIVO
+              Expanded(
                 child: GestureDetector(
-                  onTap: widget.viewModel.toggleActive,
+                  // Simplemente apagamos
+                  onTap: () => widget.viewModel.setTrackingStatus(false),
                   child: Container(
                     decoration: BoxDecoration(
                       color: !widget.viewModel.isActive
-                          ? AppColors.red1
+                          ? AppColors.red1 // Asegúrate de importar tus colores
                           : Colors.transparent,
                       borderRadius: BorderRadius.circular(20),
                     ),
@@ -186,14 +194,13 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                 ),
-              );
-            },
-          ),
-        ],
+              ),
+            ],
+          );
+        },
       ),
     );
   }
-
   Widget _buildCharacterImage(Size size) {
     return Positioned(
       top: size.height * 0.1,

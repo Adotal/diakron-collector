@@ -125,30 +125,6 @@ class _BackgroundTrackerScreenState extends State<BackgroundTrackerScreen> {
         );
       }
     });
-    // Handle notifications when the app is OPEN (Foreground)
-    // FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-    //   RemoteNotification? notification = message.notification;
-    //   AndroidNotification? android = message.notification?.android;
-
-    //   if (notification != null && android != null) {
-    //     flutterLocalNotificationsPlugin.show(
-    //       id: 1,
-
-    //       // payload: notification.hashCode,
-    //       title:  notification.title,
-    //       body:  notification.body,
-    //       notificationDetails:  NotificationDetails(
-    //         android: AndroidNotificationDetails(
-    //           channel.id,
-    //           channel.name,
-    //           channelDescription: channel.description,
-    //           icon: '@mipmap/ic_launcher',
-    //           priority: Priority.max,
-    //         ),
-    //       ),
-    //     );
-    //   }
-    // });
   }
 
   Future<void> _initLocationTracking() async {

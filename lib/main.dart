@@ -2,6 +2,8 @@ import 'package:diakron_collectors/data/repositories/auth/auth_repository.dart';
 import 'package:diakron_collectors/data/repositories/user/collector_repository.dart';
 import 'package:diakron_collectors/data/services/auth_service.dart';
 import 'package:diakron_collectors/data/services/database_service.dart';
+import 'package:diakron_collectors/data/services/location_service.dart';
+import 'package:diakron_collectors/data/services/notification_service.dart';
 import 'package:diakron_collectors/l10n/app_localizations.dart';
 import 'package:diakron_collectors/routing/router.dart';
 import 'package:diakron_collectors/ui/core/themes/colors.dart';
@@ -14,10 +16,6 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-
-
-// final String testUserId = 'a5b6533e-4ff4-494b-83b3-2ff94830c199'; 
-// final url = Uri.parse('http://192.168.100.135:3000/update-location');
 
 Future<void> main() async {
   // To load the .env file contents into dotenv.
@@ -32,10 +30,13 @@ Future<void> main() async {
     anonKey: dotenv.get('SUPABASE_ANON_KEY'),
   );
 
-  // Initialize FCM for push notif
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-  await setupPushNotifications();
+  // Initialize Firebase
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+    );
+
+    // Inicializa toda la lógica de Notificaciones
+  await NotificationService.initialize();
 
   runApp(
     MultiProvider(
@@ -48,6 +49,8 @@ Future<void> main() async {
             databaseService: context.read<DatabaseService>(),
           ),
         ),
+        // Inyectamos LocationService para usarlo en cualquier pantalla
+        Provider<LocationService>(create: (_) => LocationService()),
         // AuthRepository is a ChangeNotifier, so we MUST use ChangeNotifierProxyProvider
         ChangeNotifierProxyProvider<AuthService, AuthRepository>(
           create: (context) =>

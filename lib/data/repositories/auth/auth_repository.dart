@@ -21,6 +21,7 @@ class AuthRepository extends ChangeNotifier {
   bool _isVerifyingAuth = false;
   bool get isVerifyingAuth => _isVerifyingAuth;
   Session? get currentSession => _authService.currentSession;
+  String get userId => _authService.currentUserId!;
 
 
   void _initListener() {
