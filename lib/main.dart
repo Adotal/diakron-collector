@@ -11,6 +11,14 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+
+
+// final String testUserId = 'a5b6533e-4ff4-494b-83b3-2ff94830c199'; 
+// final url = Uri.parse('http://192.168.100.135:3000/update-location');
+
 Future<void> main() async {
   // To load the .env file contents into dotenv.
   await dotenv.load(fileName: ".env");
@@ -23,6 +31,11 @@ Future<void> main() async {
     url: dotenv.get('SUPABASE_URL'),
     anonKey: dotenv.get('SUPABASE_ANON_KEY'),
   );
+
+  // Initialize FCM for push notif
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+  await setupPushNotifications();
 
   runApp(
     MultiProvider(
@@ -89,4 +102,32 @@ class MainApp extends StatelessWidget {
       routerConfig: router(authRepository),
     );
   }
+}
+
+// 2. Función para obtener el token y enviarlo a tu Node.js
+Future<void> setupPushNotifications() async {
+  FirebaseMessaging messaging = FirebaseMessaging.instance;
+
+  // Pedir permiso al usuario (obligatorio en iOS y Android 13+)
+  NotificationSettings settings = await messaging.requestPermission();
+
+  if (settings.authorizationStatus == AuthorizationStatus.authorized) {
+    // Obtener el token único del dispositivo
+    String? fcmToken = await messaging.getToken();
+
+    // Escuchar si el token cambia por alguna razón
+    FirebaseMessaging.instance.onTokenRefresh.listen((newToken) {
+      // Si cambia, deberías actualizarlo en tu base de datos o enviarlo a Node.js
+    });
+
+    print("Mi token FCM es: $fcmToken");
+
+    // Aquí es donde unes todo. Cuando envías tu ubicación, adjuntas el token.
+    // sendLocationToNodeJs(lat, lon, fcmToken);
+  }
+}
+
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  await Firebase.initializeApp();
+  print("Handling a background message: ${message.messageId}");
 }
