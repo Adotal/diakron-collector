@@ -24,7 +24,7 @@ class _ScannerScreenState extends State<ScannerScreen> {
       actions: [
         ListenableBuilder(
           listenable: widget.viewModel,
-          builder: (context, _) {          
+          builder: (context, _) {
             return IconButton(
               onPressed: widget.viewModel.selectedMaterials.isNotEmpty
                   ? widget.viewModel.resetSelection
@@ -36,9 +36,12 @@ class _ScannerScreenState extends State<ScannerScreen> {
       ],
       child: SafeArea(
         child: ListenableBuilder(
-          listenable: widget.viewModel,
+          listenable: Listenable.merge({
+            widget.viewModel,
+            widget.viewModel.verifyQR,
+          }),
           builder: (context, _) {
-            // 1. Si no ha confirmado la selección, mostrar el menú
+            // Si no ha confirmado la selección, mostrar el menú
             if (!widget.viewModel.isScanning) {
               return _buildMaterialMultiSelection();
             }
@@ -61,39 +64,12 @@ class _ScannerScreenState extends State<ScannerScreen> {
 
             if (verifyCommand.completed) {
               return Center(
-                child: Column(
-                  children: [
-                    SizedBox(height: Dimens.paddingVertical),
-                    SuccessIndicator(
-                      title:
-                          '¡Canje registrado exitosamente!\nPuedes entregar el siguiente beneficio al cliente',
-                      label: 'Escanear otra vez',
-                      onPressed: () => verifyCommand.clearResult(),
-                    ),
-
-                    ListenableBuilder(
-                      listenable: widget.viewModel.loadCoupon,
-                      builder: (context, child) {
-                        if (widget.viewModel.loadCoupon.running) {
-                          return const Center(
-                            child: CircularProgressIndicator(),
-                          );
-                        }
-
-                        if (widget.viewModel.loadCoupon.error) {
-                          return Center(
-                            child: ErrorIndicator(
-                              title: 'Error loading Coupon Info',
-                              label: 'Try again',
-                              onPressed: widget.viewModel.loadCoupon.execute,
-                            ),
-                          );
-                        }
-                        // Here show info about collection
-                        return Text('EXITO');
-                      },
-                    ),
-                  ],
+                child: SuccessIndicator(
+                  title:
+                      'Compuertas abiertas exitosamente!\n'
+                      'Plástico',
+                  label: 'Cerrar',
+                  onPressed: () => widget.viewModel.resetSelection(),
                 ),
               );
             }

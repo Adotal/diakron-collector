@@ -12,7 +12,7 @@ import 'package:http/http.dart' as http;
 
 // FUTURE MOVE COUPON INFO AND USER REPO TO OTHER WIDGET
 
-// 1. Excepción personalizada para limpiar el mensaje en la UI
+// Excepción personalizada para limpiar el mensaje en la UI
 class QrException implements Exception {
   final String message;
   QrException(this.message);
@@ -28,10 +28,8 @@ class ScannerViewModel extends ChangeNotifier {
   }) : _userRepository = collectorRepository,
        _authRepository = authRepository {
     verifyQR = Command1<void, Uint8List>(_verifyQR);
-    loadCoupon = Command0(_loadCoupon);
   }
 
-  int? _couponId;
   final CollectorRepository _userRepository;
   final AuthRepository _authRepository;
 
@@ -39,16 +37,7 @@ class ScannerViewModel extends ChangeNotifier {
   Barcode? _barcode;
   final _logger = Logger();
 
-  late final Command0 loadCoupon;
-
-
-
-
-
-
-
-
-
+  // 'Set' because it can appears only once each value
   final Set<String> _selectedMaterials = {};
   Set<String> get selectedMaterials => _selectedMaterials;
 
@@ -78,14 +67,14 @@ class ScannerViewModel extends ChangeNotifier {
       _isScanning = true;
       notifyListeners();
     }
-  }
+  }  
 
   void resetSelection() {
     _isScanning = false;
     _selectedMaterials.clear();
     verifyQR.clearResult();
     notifyListeners();
-  }  
+  }
 
   Future<Result<void>> _verifyQR(Uint8List payload) async {
     // Obtener la sesión actual de Supabase
@@ -100,7 +89,41 @@ class ScannerViewModel extends ChangeNotifier {
 
     _logger.i('JWT: $userAuthToken');
 
-    const url = 'https://diakron-backend.onrender.com/verify-qr-participant';
+    const url = 'https://diakron-backend.onrender.com/verify-qr-collector';
+    // const url = 'http://192.168.100.135:3000/verify-qr-collector';
+
+    /*
+      Añadir tipos de materiales al payload
+      Operadores bit a bit (Bitwise OR)
+      0001  - Metal
+      0010  - Plastic 
+      0100  - Paper/Cardboard
+      1000  - Glass
+
+    
+    */
+    int materialsByte = 0; // 0000 0000 en binario
+    if (_selectedMaterials.contains(materials[0])) {
+      materialsByte |= 1; // 0000 0001
+    }
+    if (_selectedMaterials.contains(materials[1])) {
+      materialsByte |= 2; // 0000 0010
+    }
+    if (_selectedMaterials.contains(materials[2])) {
+      materialsByte |= 4; // 0000 0100
+    }
+    if (_selectedMaterials.contains(materials[3])) {
+      materialsByte |= 8; // 0000 1000
+    }
+
+    // Crear un nuevo arreglo que sea 1 byte más grande que el payload original
+    final combinedPayload = Uint8List(payload.length + 1);
+
+    // Colocar el byte de materiales en la primera posición (índice 0)
+    combinedPayload[0] = materialsByte;
+
+    // Copiar el payload original empezando desde la posición 1
+    combinedPayload.setAll(1, payload);
 
     try {
       final response = await http.post(
@@ -109,7 +132,7 @@ class ScannerViewModel extends ChangeNotifier {
           'Content-Type': 'application/octet-stream',
           'Authorization': 'Bearer $userAuthToken',
         },
-        body: payload,
+        body: combinedPayload,
       );
 
       // Si el backend regresa un JSON, lo parseamos
@@ -117,11 +140,6 @@ class ScannerViewModel extends ChangeNotifier {
 
       if (response.statusCode == 200 && data['valid'] == true) {
         _logger.i('Binary data sent successfully!');
-
-        // Extract coupon ID
-        extractCouponId(payload);
-        // Load coupon
-        loadCoupon.execute();
 
         return Result.ok(null);
       }
@@ -135,15 +153,6 @@ class ScannerViewModel extends ChangeNotifier {
       _logger.e(error);
       return Result.error(QrException('Error de conexión o formato inválido'));
     }
-  }
-
-  void extractCouponId(Uint8List payload) {
-    // Get couponId
-
-    ByteData byteData = ByteData.sublistView(payload.sublist(16, 18));
-    //  Read as a 16-bit unsigned integer
-    _couponId = byteData.getUint16(0, Endian.big);
-    _logger.i(_couponId);
   }
 
   void handleBarcode(BarcodeCapture barcodes) {
@@ -165,24 +174,5 @@ class ScannerViewModel extends ChangeNotifier {
       _logger.e('Error decodificando el QR: $e');
       // Podrías manejar aquí un error visual si el QR no es un base64 válido
     }
-  }
-
-  Future<Result<void>> _loadCoupon() async {
-    if (_couponId == null) {
-      return Result.error(Exception(null));
-    }
-
-    // First load coupon
-    // final result = await _userRepository.fetchCoupon(couponId: _couponId!);
-
-    // switch (result) {
-    //   case Ok<Coupon>():
-    //     // Store coupon info
-    //     _coupon = result.value;
-    //     _logger.w(_coupon.toString());
-    //   case Error<Coupon>():
-    //     _logger.e(result.error);
-    // }
-    return Result.ok(null);
   }
 }
