@@ -192,6 +192,7 @@ class _BackgroundTrackerScreenState extends State<BackgroundTrackerScreen> {
 
   Future<void> _sendLocation(double lat, double lon) async {
     final url = Uri.parse('https://diakron-backend.onrender.com/update-location');
+    // TESTING
     // final url = Uri.parse('http://192.168.100.135:3000/update-location');
 
     try {

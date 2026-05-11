@@ -6,18 +6,15 @@ import 'package:diakron_collectors/data/services/location_service.dart';
 import 'package:diakron_collectors/data/services/notification_service.dart';
 import 'package:diakron_collectors/l10n/app_localizations.dart';
 import 'package:diakron_collectors/routing/router.dart';
-import 'package:diakron_collectors/routing/routes.dart';
 import 'package:diakron_collectors/ui/core/themes/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 
 Future<void> main() async {
   // To load the .env file contents into dotenv.
@@ -105,32 +102,4 @@ class MainApp extends StatelessWidget {
       routerConfig: router(authRepository),
     );
   }
-}
-
-// 2. Función para obtener el token y enviarlo a tu Node.js
-Future<void> setupPushNotifications() async {
-  FirebaseMessaging messaging = FirebaseMessaging.instance;
-
-  // Pedir permiso al usuario (obligatorio en iOS y Android 13+)
-  NotificationSettings settings = await messaging.requestPermission();
-
-  if (settings.authorizationStatus == AuthorizationStatus.authorized) {
-    // Obtener el token único del dispositivo
-    String? fcmToken = await messaging.getToken();
-
-    // Escuchar si el token cambia por alguna razón
-    FirebaseMessaging.instance.onTokenRefresh.listen((newToken) {
-      // Si cambia, deberías actualizarlo en tu base de datos o enviarlo a Node.js
-    });
-
-    print("Mi token FCM es: $fcmToken");
-
-    // Aquí es donde unes todo. Cuando envías tu ubicación, adjuntas el token.
-    // sendLocationToNodeJs(lat, lon, fcmToken);
-  }
-}
-
-Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  await Firebase.initializeApp();
-  print("Handling a background message: ${message.messageId}");
 }

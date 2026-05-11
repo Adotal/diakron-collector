@@ -2,7 +2,6 @@ import 'package:diakron_collectors/ui/core/themes/colors.dart';
 import 'package:diakron_collectors/ui/core/themes/dimens.dart';
 import 'package:diakron_collectors/ui/core/ui/custom_screen.dart';
 import 'package:diakron_collectors/ui/core/ui/error_indicator.dart';
-import 'package:diakron_collectors/ui/core/ui/form_button.dart';
 import 'package:diakron_collectors/ui/core/ui/success_indicator.dart';
 import 'package:diakron_collectors/ui/scanner/view_models/scanner_viewmodel.dart';
 import 'package:flutter/material.dart';

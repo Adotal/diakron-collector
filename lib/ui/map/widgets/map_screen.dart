@@ -1,9 +1,7 @@
-import 'dart:typed_data';
 import 'package:diakron_collectors/models/segregator/segregator.dart';
 import 'package:diakron_collectors/routing/routes.dart';
 import 'package:diakron_collectors/ui/core/themes/colors.dart';
 import 'package:diakron_collectors/ui/core/ui/custom_screen.dart';
-import 'package:diakron_collectors/ui/core/ui/form_button.dart';
 import 'package:diakron_collectors/ui/map/view_models/map_viewmodel.dart';
 import 'package:diakron_collectors/ui/map/widgets/location_card.dart';
 import 'package:diakron_collectors/ui/map/widgets/map_controls.dart';
@@ -56,11 +54,9 @@ class _MapScreenState extends State<MapScreen> {
       title: 'Mapa',
       actions: [
         IconButton(
-          icon: const Icon(Icons.info_outline, color: Colors.white),
+          icon: const Icon(Icons.info_outline),
           tooltip: 'Ver Leyenda',
-          onPressed: () {
-            _showLegendDialog(context);
-          },
+          onPressed: () => _showLegendDialog(context),
         ),
       ],
       child: ListenableBuilder(
