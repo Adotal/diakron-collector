@@ -79,11 +79,21 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
         ),
         GoRoute(
           path: Routes.collections,
-          builder: (context, state) {
-            final viewModel = CollectionsViewModel(
-              collectorRespository: context.read<CollectorRepository>(),
+          pageBuilder: (context, state) {
+            return MaterialPage(
+              key: state.pageKey,
+              child: ChangeNotifierProvider<CollectionsViewModel>(
+                create: (context) => CollectionsViewModel(
+                  collectorRespository: context.read<CollectorRepository>(),
+                ),
+                child: Builder(
+                  builder: (context) {
+                    final viewModel = context.read<CollectionsViewModel>();
+                    return CollectionsScreen(viewModel: viewModel);
+                  },
+                ),
+              ),
             );
-            return CollectionsScreen(viewModel: viewModel);
           },
           routes: [
             GoRoute(

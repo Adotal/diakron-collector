@@ -13,6 +13,14 @@ _WasteCollection _$WasteCollectionFromJson(Map<String, dynamic> json) =>
       idSegregator: (json['id_segregator'] as num).toInt(),
       collDate: DateTime.parse(json['coll_date'] as String),
       isComplete: json['is_complete'] as bool,
+      idCollectionCenter: json['id_collection_center'] as String?,
+      paymentDate: json['payment_date'] == null
+          ? null
+          : DateTime.parse(json['payment_date'] as String),
+      massGrams: (json['mass_grams'] as num?)?.toInt(),
+      bruteAmount: (json['brute_amount'] as num?)?.toDouble(),
+      commision: (json['commision'] as num?)?.toDouble(),
+      netAmount: (json['net_amount'] as num?)?.toDouble(),
     );
 
 Map<String, dynamic> _$WasteCollectionToJson(_WasteCollection instance) =>
@@ -22,4 +30,10 @@ Map<String, dynamic> _$WasteCollectionToJson(_WasteCollection instance) =>
       'id_segregator': instance.idSegregator,
       'coll_date': instance.collDate.toIso8601String(),
       'is_complete': instance.isComplete,
+      'id_collection_center': instance.idCollectionCenter,
+      'payment_date': instance.paymentDate?.toIso8601String(),
+      'mass_grams': instance.massGrams,
+      'brute_amount': instance.bruteAmount,
+      'commision': instance.commision,
+      'net_amount': instance.netAmount,
     };

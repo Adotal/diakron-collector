@@ -15,7 +15,8 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$WasteCollection {
 
- int get id; int get idWasteType; int get idSegregator; DateTime get collDate; bool get isComplete;
+ int get id; int get idWasteType; int get idSegregator; DateTime get collDate; bool get isComplete;// Campos de la entrega (pueden ser null)
+ String? get idCollectionCenter; DateTime? get paymentDate; int? get massGrams; double? get bruteAmount; double? get commision; double? get netAmount;
 /// Create a copy of WasteCollection
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +29,16 @@ $WasteCollectionCopyWith<WasteCollection> get copyWith => _$WasteCollectionCopyW
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is WasteCollection&&(identical(other.id, id) || other.id == id)&&(identical(other.idWasteType, idWasteType) || other.idWasteType == idWasteType)&&(identical(other.idSegregator, idSegregator) || other.idSegregator == idSegregator)&&(identical(other.collDate, collDate) || other.collDate == collDate)&&(identical(other.isComplete, isComplete) || other.isComplete == isComplete));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is WasteCollection&&(identical(other.id, id) || other.id == id)&&(identical(other.idWasteType, idWasteType) || other.idWasteType == idWasteType)&&(identical(other.idSegregator, idSegregator) || other.idSegregator == idSegregator)&&(identical(other.collDate, collDate) || other.collDate == collDate)&&(identical(other.isComplete, isComplete) || other.isComplete == isComplete)&&(identical(other.idCollectionCenter, idCollectionCenter) || other.idCollectionCenter == idCollectionCenter)&&(identical(other.paymentDate, paymentDate) || other.paymentDate == paymentDate)&&(identical(other.massGrams, massGrams) || other.massGrams == massGrams)&&(identical(other.bruteAmount, bruteAmount) || other.bruteAmount == bruteAmount)&&(identical(other.commision, commision) || other.commision == commision)&&(identical(other.netAmount, netAmount) || other.netAmount == netAmount));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,idWasteType,idSegregator,collDate,isComplete);
+int get hashCode => Object.hash(runtimeType,id,idWasteType,idSegregator,collDate,isComplete,idCollectionCenter,paymentDate,massGrams,bruteAmount,commision,netAmount);
 
 @override
 String toString() {
-  return 'WasteCollection(id: $id, idWasteType: $idWasteType, idSegregator: $idSegregator, collDate: $collDate, isComplete: $isComplete)';
+  return 'WasteCollection(id: $id, idWasteType: $idWasteType, idSegregator: $idSegregator, collDate: $collDate, isComplete: $isComplete, idCollectionCenter: $idCollectionCenter, paymentDate: $paymentDate, massGrams: $massGrams, bruteAmount: $bruteAmount, commision: $commision, netAmount: $netAmount)';
 }
 
 
@@ -48,7 +49,7 @@ abstract mixin class $WasteCollectionCopyWith<$Res>  {
   factory $WasteCollectionCopyWith(WasteCollection value, $Res Function(WasteCollection) _then) = _$WasteCollectionCopyWithImpl;
 @useResult
 $Res call({
- int id, int idWasteType, int idSegregator, DateTime collDate, bool isComplete
+ int id, int idWasteType, int idSegregator, DateTime collDate, bool isComplete, String? idCollectionCenter, DateTime? paymentDate, int? massGrams, double? bruteAmount, double? commision, double? netAmount
 });
 
 
@@ -65,14 +66,20 @@ class _$WasteCollectionCopyWithImpl<$Res>
 
 /// Create a copy of WasteCollection
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? idWasteType = null,Object? idSegregator = null,Object? collDate = null,Object? isComplete = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? idWasteType = null,Object? idSegregator = null,Object? collDate = null,Object? isComplete = null,Object? idCollectionCenter = freezed,Object? paymentDate = freezed,Object? massGrams = freezed,Object? bruteAmount = freezed,Object? commision = freezed,Object? netAmount = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,idWasteType: null == idWasteType ? _self.idWasteType : idWasteType // ignore: cast_nullable_to_non_nullable
 as int,idSegregator: null == idSegregator ? _self.idSegregator : idSegregator // ignore: cast_nullable_to_non_nullable
 as int,collDate: null == collDate ? _self.collDate : collDate // ignore: cast_nullable_to_non_nullable
 as DateTime,isComplete: null == isComplete ? _self.isComplete : isComplete // ignore: cast_nullable_to_non_nullable
-as bool,
+as bool,idCollectionCenter: freezed == idCollectionCenter ? _self.idCollectionCenter : idCollectionCenter // ignore: cast_nullable_to_non_nullable
+as String?,paymentDate: freezed == paymentDate ? _self.paymentDate : paymentDate // ignore: cast_nullable_to_non_nullable
+as DateTime?,massGrams: freezed == massGrams ? _self.massGrams : massGrams // ignore: cast_nullable_to_non_nullable
+as int?,bruteAmount: freezed == bruteAmount ? _self.bruteAmount : bruteAmount // ignore: cast_nullable_to_non_nullable
+as double?,commision: freezed == commision ? _self.commision : commision // ignore: cast_nullable_to_non_nullable
+as double?,netAmount: freezed == netAmount ? _self.netAmount : netAmount // ignore: cast_nullable_to_non_nullable
+as double?,
   ));
 }
 
@@ -157,10 +164,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  int idWasteType,  int idSegregator,  DateTime collDate,  bool isComplete)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  int idWasteType,  int idSegregator,  DateTime collDate,  bool isComplete,  String? idCollectionCenter,  DateTime? paymentDate,  int? massGrams,  double? bruteAmount,  double? commision,  double? netAmount)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _WasteCollection() when $default != null:
-return $default(_that.id,_that.idWasteType,_that.idSegregator,_that.collDate,_that.isComplete);case _:
+return $default(_that.id,_that.idWasteType,_that.idSegregator,_that.collDate,_that.isComplete,_that.idCollectionCenter,_that.paymentDate,_that.massGrams,_that.bruteAmount,_that.commision,_that.netAmount);case _:
   return orElse();
 
 }
@@ -178,10 +185,10 @@ return $default(_that.id,_that.idWasteType,_that.idSegregator,_that.collDate,_th
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  int idWasteType,  int idSegregator,  DateTime collDate,  bool isComplete)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  int idWasteType,  int idSegregator,  DateTime collDate,  bool isComplete,  String? idCollectionCenter,  DateTime? paymentDate,  int? massGrams,  double? bruteAmount,  double? commision,  double? netAmount)  $default,) {final _that = this;
 switch (_that) {
 case _WasteCollection():
-return $default(_that.id,_that.idWasteType,_that.idSegregator,_that.collDate,_that.isComplete);case _:
+return $default(_that.id,_that.idWasteType,_that.idSegregator,_that.collDate,_that.isComplete,_that.idCollectionCenter,_that.paymentDate,_that.massGrams,_that.bruteAmount,_that.commision,_that.netAmount);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -198,10 +205,10 @@ return $default(_that.id,_that.idWasteType,_that.idSegregator,_that.collDate,_th
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  int idWasteType,  int idSegregator,  DateTime collDate,  bool isComplete)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  int idWasteType,  int idSegregator,  DateTime collDate,  bool isComplete,  String? idCollectionCenter,  DateTime? paymentDate,  int? massGrams,  double? bruteAmount,  double? commision,  double? netAmount)?  $default,) {final _that = this;
 switch (_that) {
 case _WasteCollection() when $default != null:
-return $default(_that.id,_that.idWasteType,_that.idSegregator,_that.collDate,_that.isComplete);case _:
+return $default(_that.id,_that.idWasteType,_that.idSegregator,_that.collDate,_that.isComplete,_that.idCollectionCenter,_that.paymentDate,_that.massGrams,_that.bruteAmount,_that.commision,_that.netAmount);case _:
   return null;
 
 }
@@ -213,7 +220,7 @@ return $default(_that.id,_that.idWasteType,_that.idSegregator,_that.collDate,_th
 
 @JsonSerializable(fieldRename: FieldRename.snake)
 class _WasteCollection implements WasteCollection {
-  const _WasteCollection({required this.id, required this.idWasteType, required this.idSegregator, required this.collDate, required this.isComplete});
+  const _WasteCollection({required this.id, required this.idWasteType, required this.idSegregator, required this.collDate, required this.isComplete, this.idCollectionCenter, this.paymentDate, this.massGrams, this.bruteAmount, this.commision, this.netAmount});
   factory _WasteCollection.fromJson(Map<String, dynamic> json) => _$WasteCollectionFromJson(json);
 
 @override final  int id;
@@ -221,6 +228,13 @@ class _WasteCollection implements WasteCollection {
 @override final  int idSegregator;
 @override final  DateTime collDate;
 @override final  bool isComplete;
+// Campos de la entrega (pueden ser null)
+@override final  String? idCollectionCenter;
+@override final  DateTime? paymentDate;
+@override final  int? massGrams;
+@override final  double? bruteAmount;
+@override final  double? commision;
+@override final  double? netAmount;
 
 /// Create a copy of WasteCollection
 /// with the given fields replaced by the non-null parameter values.
@@ -235,16 +249,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _WasteCollection&&(identical(other.id, id) || other.id == id)&&(identical(other.idWasteType, idWasteType) || other.idWasteType == idWasteType)&&(identical(other.idSegregator, idSegregator) || other.idSegregator == idSegregator)&&(identical(other.collDate, collDate) || other.collDate == collDate)&&(identical(other.isComplete, isComplete) || other.isComplete == isComplete));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _WasteCollection&&(identical(other.id, id) || other.id == id)&&(identical(other.idWasteType, idWasteType) || other.idWasteType == idWasteType)&&(identical(other.idSegregator, idSegregator) || other.idSegregator == idSegregator)&&(identical(other.collDate, collDate) || other.collDate == collDate)&&(identical(other.isComplete, isComplete) || other.isComplete == isComplete)&&(identical(other.idCollectionCenter, idCollectionCenter) || other.idCollectionCenter == idCollectionCenter)&&(identical(other.paymentDate, paymentDate) || other.paymentDate == paymentDate)&&(identical(other.massGrams, massGrams) || other.massGrams == massGrams)&&(identical(other.bruteAmount, bruteAmount) || other.bruteAmount == bruteAmount)&&(identical(other.commision, commision) || other.commision == commision)&&(identical(other.netAmount, netAmount) || other.netAmount == netAmount));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,idWasteType,idSegregator,collDate,isComplete);
+int get hashCode => Object.hash(runtimeType,id,idWasteType,idSegregator,collDate,isComplete,idCollectionCenter,paymentDate,massGrams,bruteAmount,commision,netAmount);
 
 @override
 String toString() {
-  return 'WasteCollection(id: $id, idWasteType: $idWasteType, idSegregator: $idSegregator, collDate: $collDate, isComplete: $isComplete)';
+  return 'WasteCollection(id: $id, idWasteType: $idWasteType, idSegregator: $idSegregator, collDate: $collDate, isComplete: $isComplete, idCollectionCenter: $idCollectionCenter, paymentDate: $paymentDate, massGrams: $massGrams, bruteAmount: $bruteAmount, commision: $commision, netAmount: $netAmount)';
 }
 
 
@@ -255,7 +269,7 @@ abstract mixin class _$WasteCollectionCopyWith<$Res> implements $WasteCollection
   factory _$WasteCollectionCopyWith(_WasteCollection value, $Res Function(_WasteCollection) _then) = __$WasteCollectionCopyWithImpl;
 @override @useResult
 $Res call({
- int id, int idWasteType, int idSegregator, DateTime collDate, bool isComplete
+ int id, int idWasteType, int idSegregator, DateTime collDate, bool isComplete, String? idCollectionCenter, DateTime? paymentDate, int? massGrams, double? bruteAmount, double? commision, double? netAmount
 });
 
 
@@ -272,14 +286,20 @@ class __$WasteCollectionCopyWithImpl<$Res>
 
 /// Create a copy of WasteCollection
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? idWasteType = null,Object? idSegregator = null,Object? collDate = null,Object? isComplete = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? idWasteType = null,Object? idSegregator = null,Object? collDate = null,Object? isComplete = null,Object? idCollectionCenter = freezed,Object? paymentDate = freezed,Object? massGrams = freezed,Object? bruteAmount = freezed,Object? commision = freezed,Object? netAmount = freezed,}) {
   return _then(_WasteCollection(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,idWasteType: null == idWasteType ? _self.idWasteType : idWasteType // ignore: cast_nullable_to_non_nullable
 as int,idSegregator: null == idSegregator ? _self.idSegregator : idSegregator // ignore: cast_nullable_to_non_nullable
 as int,collDate: null == collDate ? _self.collDate : collDate // ignore: cast_nullable_to_non_nullable
 as DateTime,isComplete: null == isComplete ? _self.isComplete : isComplete // ignore: cast_nullable_to_non_nullable
-as bool,
+as bool,idCollectionCenter: freezed == idCollectionCenter ? _self.idCollectionCenter : idCollectionCenter // ignore: cast_nullable_to_non_nullable
+as String?,paymentDate: freezed == paymentDate ? _self.paymentDate : paymentDate // ignore: cast_nullable_to_non_nullable
+as DateTime?,massGrams: freezed == massGrams ? _self.massGrams : massGrams // ignore: cast_nullable_to_non_nullable
+as int?,bruteAmount: freezed == bruteAmount ? _self.bruteAmount : bruteAmount // ignore: cast_nullable_to_non_nullable
+as double?,commision: freezed == commision ? _self.commision : commision // ignore: cast_nullable_to_non_nullable
+as double?,netAmount: freezed == netAmount ? _self.netAmount : netAmount // ignore: cast_nullable_to_non_nullable
+as double?,
   ));
 }
 

@@ -13,6 +13,15 @@ abstract class WasteCollection with _$WasteCollection {
     required int idSegregator,
     required DateTime collDate,
     required bool isComplete,    
+    
+    // Campos de la entrega (pueden ser null)
+    String? idCollectionCenter,
+    DateTime? paymentDate,
+    int? massGrams,
+    double? bruteAmount,
+    double? commision,
+    double? netAmount,
+    
   }) = _WasteCollection;
 
   factory WasteCollection.fromJson(Map<String, dynamic> json) => _$WasteCollectionFromJson(json);

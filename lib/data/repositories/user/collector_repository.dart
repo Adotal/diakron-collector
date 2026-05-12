@@ -78,7 +78,7 @@ class CollectorRepository {
   Future<Result<List<WasteCollection>>> fetchWasteCollections() async {
     try {
       final result = await _databaseService.fetchTableWhere(
-        table: 'waste_collections',
+        table: 'full_waste_collections',
         column: 'id_collector',
         value: _cachedCollector!.id,
       );
