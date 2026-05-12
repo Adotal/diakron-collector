@@ -219,8 +219,8 @@ return $default(_that.id,_that.idWasteType,_that.idSegregator,_that.collDate,_th
 /// @nodoc
 
 @JsonSerializable(fieldRename: FieldRename.snake)
-class _WasteCollection implements WasteCollection {
-  const _WasteCollection({required this.id, required this.idWasteType, required this.idSegregator, required this.collDate, required this.isComplete, this.idCollectionCenter, this.paymentDate, this.massGrams, this.bruteAmount, this.commision, this.netAmount});
+class _WasteCollection extends WasteCollection {
+  const _WasteCollection({required this.id, required this.idWasteType, required this.idSegregator, required this.collDate, required this.isComplete, this.idCollectionCenter, this.paymentDate, this.massGrams, this.bruteAmount, this.commision, this.netAmount}): super._();
   factory _WasteCollection.fromJson(Map<String, dynamic> json) => _$WasteCollectionFromJson(json);
 
 @override final  int id;

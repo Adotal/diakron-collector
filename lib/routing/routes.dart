@@ -12,6 +12,9 @@ abstract final class Routes {
   static const collections = '/$collectionsRelative';
   static const collectionsRelative = 'collections';
 
+  static const collectionDetails = '$collections/$detailsRelative';
+  static const detailsRelative = 'details';
+
   static String collectionQRById(String id) => '$collections/$id';
 
   static const scanner = '/$scannerRelative';
@@ -22,4 +25,5 @@ abstract final class Routes {
 
   static const profile = '/$profileRelative';
   static const profileRelative = 'profile';
+
 }

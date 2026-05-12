@@ -65,6 +65,9 @@ class _QRCollectionScreenState extends State<QRCollectionScreen> {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
+                      const SizedBox(height: 40),
+                      const Text('El codigó caducará en 24 horas depués de su generación',
+                      textAlign: TextAlign.center,)
                     ],
                   ),
                 );

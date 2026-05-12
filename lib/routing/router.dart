@@ -3,6 +3,7 @@ import 'package:diakron_collectors/data/repositories/auth/auth_repository.dart';
 import 'package:diakron_collectors/data/repositories/map/map_repository_impl.dart';
 import 'package:diakron_collectors/data/repositories/user/collector_repository.dart';
 import 'package:diakron_collectors/data/services/location_service.dart';
+import 'package:diakron_collectors/models/waste_collection/waste_collection.dart';
 import 'package:diakron_collectors/routing/routes.dart';
 import 'package:diakron_collectors/ui/auth/forgot_password/view_models/forgot_password_viewmodel.dart';
 import 'package:diakron_collectors/ui/auth/forgot_password/widgets/forgot_password_screen.dart';
@@ -13,6 +14,7 @@ import 'package:diakron_collectors/ui/auth/reset_password/widgets/reset_password
 import 'package:diakron_collectors/ui/auth/sigunp/view_models/signup_viewmodel.dart';
 import 'package:diakron_collectors/ui/auth/sigunp/widgets/signup_screen.dart';
 import 'package:diakron_collectors/ui/collections/list/view_models/collections_view_model.dart';
+import 'package:diakron_collectors/ui/collections/list/widgets/collection_detail_screen.dart';
 import 'package:diakron_collectors/ui/collections/list/widgets/collections_screen.dart';
 import 'package:diakron_collectors/ui/collections/qr_collection/view_models/qr_collection_view_model.dart';
 import 'package:diakron_collectors/ui/collections/qr_collection/widgets/qr_collection_screen.dart';
@@ -96,6 +98,24 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
             );
           },
           routes: [
+            GoRoute(
+              path: Routes.detailsRelative,
+              builder: (context, state) {
+                final collection = state.extra;
+
+                if (collection is WasteCollection) {
+                  return CollectionDetailScreen(collection: collection);
+                }
+
+                // Si por alguna razón el extra es nulo o tipo incorrecto,
+                // rediriges o muestras un error elegante.
+                return const Scaffold(
+                  body: Center(
+                    child: Text("Error: No se encontró la información."),
+                  ),
+                );
+              },
+            ),
             GoRoute(
               path: ':id', // This matches the ${collection.id}
               builder: (context, state) {

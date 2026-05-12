@@ -184,10 +184,21 @@ class _CollectionsScreenState extends State<CollectionsScreen> {
                                     wasteTypeMap, // Pasamos el Map encontrado
                                 onShowQR: () {
                                   // Lógica para abrir el QR
-                                  context.push(
-                                    Routes.collectionQRById('${collection.id}'),
-                                  );
-                                  // _showQRDialog(context, collection.id);
+                                  if (!collection.isExpired()) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text(
+                                          'Esta recolección ha caducado',
+                                        ),
+                                      ),
+                                    );
+                                  } else {
+                                    context.push(
+                                      Routes.collectionQRById(
+                                        '${collection.id}',
+                                      ),
+                                    );
+                                  }
                                 },
                               );
                             },
@@ -222,7 +233,7 @@ class _CollectionsScreenState extends State<CollectionsScreen> {
     return ChoiceChip(
       label: Text(label),
       selected: isSelected,
-      selectedColor: Colors.green.withOpacity(0.2),
+      selectedColor: Colors.green.withValues(alpha:  0.2),
       checkmarkColor: Colors.green,
       labelStyle: TextStyle(
         color: isSelected ? Colors.green.shade800 : Colors.black87,
@@ -328,67 +339,74 @@ class WasteCollectionCard extends StatelessWidget {
     // Obtenemos estilo visual basado en el nombre (String) que viene de la BD
     final iconData = _getVisualsByTypeName(typeName);
 
-    return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-      elevation: 3,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-      child: Stack(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Row(
-              children: [
-                _buildTypeIcon(iconData),
-                const SizedBox(width: 16),
-                _buildInfoColumn(typeName),
-              ],
+    return InkWell(
+      onTap: () => context.push(Routes.collectionDetails, extra: collection),
+      child: Card(
+        margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+        elevation: 3,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+        child: Stack(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Row(
+                children: [
+                  _buildTypeIcon(iconData),
+                  const SizedBox(width: 16),
+                  _buildInfoColumn(typeName),
+                ],
+              ),
             ),
-          ),
-
-          // Botón QR estilizado
-          Positioned(
-            top: 8,
-            right: 8,
-            child: Material(
-              color: Colors.transparent,
-              child: InkWell(
-                borderRadius: BorderRadius.circular(20),
-                onTap: onShowQR,
-                child: const Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Icon(
-                    Icons.qr_code_scanner,
-                    color: Colors.indigo,
-                    size: 28,
+      
+            // Botón QR estilizado
+            Positioned(
+              top: 8,
+              right: 8,
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(20),
+                  onTap: onShowQR,
+                  child: const Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Icon(
+                      Icons.qr_code_scanner,
+                      color: Colors.indigo,
+                      size: 28,
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
-          Positioned(
-            bottom: 12,
-            right: 16,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              decoration: BoxDecoration(
-                color: collection.isComplete
-                    ? Colors.green[100]
-                    : Colors.orange[100],
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Text(
-                collection.isComplete ? "COMPLETO" : "PENDIENTE",
-                style: TextStyle(
+            Positioned(
+              bottom: 12,
+              right: 16,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
                   color: collection.isComplete
-                      ? Colors.green[800]
-                      : Colors.orange[800],
-                  fontSize: 10,
-                  fontWeight: FontWeight.bold,
+                      ? Colors.green[100]
+                      : Colors.orange[100],
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  collection.isComplete
+                      ? "COMPLETO"
+                      : collection.isExpired()
+                      ? "CADUCADA"
+                      : "PENDIENTE",
+                  style: TextStyle(
+                    color: collection.isComplete
+                        ? Colors.green[800]
+                        : Colors.orange[800],
+                    fontSize: 10,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

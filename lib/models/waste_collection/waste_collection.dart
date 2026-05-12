@@ -5,15 +5,14 @@ part 'waste_collection.g.dart';
 
 @freezed
 abstract class WasteCollection with _$WasteCollection {
-
   @JsonSerializable(fieldRename: FieldRename.snake)
   const factory WasteCollection({
     required int id,
     required int idWasteType,
     required int idSegregator,
     required DateTime collDate,
-    required bool isComplete,    
-    
+    required bool isComplete,
+
     // Campos de la entrega (pueden ser null)
     String? idCollectionCenter,
     DateTime? paymentDate,
@@ -21,8 +20,23 @@ abstract class WasteCollection with _$WasteCollection {
     double? bruteAmount,
     double? commision,
     double? netAmount,
-    
   }) = _WasteCollection;
 
-  factory WasteCollection.fromJson(Map<String, dynamic> json) => _$WasteCollectionFromJson(json);
+  factory WasteCollection.fromJson(Map<String, dynamic> json) =>
+      _$WasteCollectionFromJson(json);
+
+
+  // Added constructor for personalized methods
+  const WasteCollection._();
+
+  bool isExpired() {
+    return !isComplete || isMoreThan24Hours(collDate);
+  }
+
+  bool isMoreThan24Hours(DateTime pastDate) {
+    final now = DateTime.now();
+    final difference = now.difference(pastDate);
+    // Returns true if 24 hours or more have passed
+    return difference.inHours >= 24;
+  }
 }
