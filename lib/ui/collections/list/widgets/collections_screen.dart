@@ -184,7 +184,7 @@ class _CollectionsScreenState extends State<CollectionsScreen> {
                                     wasteTypeMap, // Pasamos el Map encontrado
                                 onShowQR: () {
                                   // Lógica para abrir el QR
-                                  if (!collection.isExpired()) {
+                                  if (collection.isExpired()) {
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       const SnackBar(
                                         content: Text(

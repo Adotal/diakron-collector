@@ -30,7 +30,7 @@ abstract class WasteCollection with _$WasteCollection {
   const WasteCollection._();
 
   bool isExpired() {
-    return !isComplete || isMoreThan24Hours(collDate);
+    return isMoreThan24Hours(collDate);
   }
 
   bool isMoreThan24Hours(DateTime pastDate) {
