@@ -12,8 +12,10 @@ import 'package:diakron_collectors/ui/auth/reset_password/view_models/reset_pass
 import 'package:diakron_collectors/ui/auth/reset_password/widgets/reset_password_screen.dart';
 import 'package:diakron_collectors/ui/auth/sigunp/view_models/signup_viewmodel.dart';
 import 'package:diakron_collectors/ui/auth/sigunp/widgets/signup_screen.dart';
-import 'package:diakron_collectors/ui/collections/view_models/collections_view_model.dart';
-import 'package:diakron_collectors/ui/collections/widgets/collections_screen.dart';
+import 'package:diakron_collectors/ui/collections/list/view_models/collections_view_model.dart';
+import 'package:diakron_collectors/ui/collections/list/widgets/collections_screen.dart';
+import 'package:diakron_collectors/ui/collections/qr_collection/view_models/qr_collection_view_model.dart';
+import 'package:diakron_collectors/ui/collections/qr_collection/widgets/qr_collection_screen.dart';
 import 'package:diakron_collectors/ui/home/view_models/home_viewmodel.dart';
 import 'package:diakron_collectors/ui/home/widgets/home_screen.dart';
 import 'package:diakron_collectors/ui/main/widgets/main_screen.dart';
@@ -63,7 +65,7 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
                   final viewModel = HomeViewModel(
                     authRepository: context.read<AuthRepository>(),
                     locationService: context.read<LocationService>(),
-                    collectorRepository: context.read<CollectorRepository>()
+                    collectorRepository: context.read<CollectorRepository>(),
                   );
                   return HomeScreen(viewModel: viewModel);
                 },
@@ -76,14 +78,27 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
           },
         ),
         GoRoute(
-          path: Routes.activity,
+          path: Routes.collections,
           builder: (context, state) {
             final viewModel = CollectionsViewModel(
-              collectorRespository: context.read<CollectorRepository>() 
-             
+              collectorRespository: context.read<CollectorRepository>(),
             );
-            return CollectionsScreen(viewModel: viewModel);            
+            return CollectionsScreen(viewModel: viewModel);
           },
+          routes: [
+            GoRoute(
+              path: ':id', // This matches the ${collection.id}
+              builder: (context, state) {
+                final String idString = state.pathParameters['id']!;
+                // Extract the ID from the URL path
+                final viewModel = QRCollectionViewModel(
+                  collectorRepository: context.read<CollectorRepository>(),
+                  idCollection: idString,
+                );
+                return QRCollectionScreen(viewModel: viewModel);
+              },
+            ),
+          ],
         ),
         GoRoute(
           path: Routes.scanner,
@@ -112,9 +127,9 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
           builder: (context, state) {
             final viewModel = ProfileViewModel(
               authRepository: context.read<AuthRepository>(),
-              collectorRepository: context.read<CollectorRepository>()
+              collectorRepository: context.read<CollectorRepository>(),
             );
-            return ProfileScreen(viewModel: viewModel);            
+            return ProfileScreen(viewModel: viewModel);
           },
         ),
       ],

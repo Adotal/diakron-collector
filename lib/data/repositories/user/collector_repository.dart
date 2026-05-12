@@ -14,9 +14,7 @@ class CollectorRepository {
   Collector? _cachedCollector;
   Collector get cachedCollector => _cachedCollector!;
 
-  Future<Result<Collector>> getCollector({
-    bool forceRefresh = false,
-  }) async {
+  Future<Result<Collector>> getCollector({bool forceRefresh = false}) async {
     if (_cachedCollector != null && !forceRefresh) {
       _logger.i('Returned cached ${_cachedCollector.toString()}');
       return Future.value(Result.ok(_cachedCollector!));
@@ -60,14 +58,13 @@ class CollectorRepository {
       return Result.error(error);
     }
   }
-    Future<Result<List<Map<String, dynamic>>>> fetchWasteTypes() async {
+
+  Future<Result<List<Map<String, dynamic>>>> fetchWasteTypes() async {
     try {
-      final result = await _databaseService.fetchTable(
-        table: 'waste_types',
-      );
+      final result = await _databaseService.fetchTable(table: 'waste_types');
 
       switch (result) {
-        case Ok<List<Map<String, dynamic>>>():      
+        case Ok<List<Map<String, dynamic>>>():
           return Result.ok(result.value);
 
         case Error<List<Map<String, dynamic>>>():
@@ -78,13 +75,12 @@ class CollectorRepository {
     }
   }
 
-
   Future<Result<List<WasteCollection>>> fetchWasteCollections() async {
     try {
       final result = await _databaseService.fetchTableWhere(
         table: 'waste_collections',
         column: 'id_collector',
-        value: _cachedCollector!.id
+        value: _cachedCollector!.id,
       );
 
       switch (result) {
@@ -102,5 +98,25 @@ class CollectorRepository {
       return Result.error(error);
     }
   }
-  
+
+  Future<Result<String>> fetchCollectionQR({required String idCollection}) async {
+    try {
+      final result = await _databaseService.fetchTableWhere(
+        table: 'waste_collections_payloads',
+        column: 'id_collection',
+        value: idCollection,
+      );
+
+      switch (result) {
+        case Ok<List<Map<String, dynamic>>>():
+        // Retorna solamente payload del primer y único resultado
+          return Result.ok(result.value[0]['payload']);
+        case Error<List<Map<String, dynamic>>>():          
+          return Result.error(result.error);
+      }
+
+    } on Exception catch (error) {
+      return Result.error(error);
+    }
+  }
 }

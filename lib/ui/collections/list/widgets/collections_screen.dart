@@ -1,10 +1,10 @@
-import 'dart:ffi';
-
 import 'package:diakron_collectors/models/waste_collection/waste_collection.dart';
-import 'package:diakron_collectors/ui/collections/view_models/collections_view_model.dart';
+import 'package:diakron_collectors/routing/routes.dart';
+import 'package:diakron_collectors/ui/collections/list/view_models/collections_view_model.dart';
 import 'package:diakron_collectors/ui/core/ui/custom_screen.dart';
 import 'package:diakron_collectors/ui/core/ui/error_indicator.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart'; // Necesario para DateFormat y NumberFormat
 
 class CollectionsScreen extends StatefulWidget {
@@ -106,7 +106,7 @@ class _CollectionsScreenState extends State<CollectionsScreen> {
                               ),
                             ],
                           ),
-                        ),                    
+                        ),
                         //  Animación suave al cambiar entre filtros
                         AnimatedSize(
                           duration: const Duration(milliseconds: 300),
@@ -184,6 +184,9 @@ class _CollectionsScreenState extends State<CollectionsScreen> {
                                     wasteTypeMap, // Pasamos el Map encontrado
                                 onShowQR: () {
                                   // Lógica para abrir el QR
+                                  context.push(
+                                    Routes.collectionQRById('${collection.id}'),
+                                  );
                                   // _showQRDialog(context, collection.id);
                                 },
                               );

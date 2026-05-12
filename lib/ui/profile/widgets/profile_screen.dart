@@ -9,11 +9,10 @@ class ProfileScreen extends StatefulWidget {
   final ProfileViewModel viewModel;
 
   @override
-  State<ProfileScreen> createState() => _ProfileScreenState();  
+  State<ProfileScreen> createState() => _ProfileScreenState();
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  
   @override
   void initState() {
     super.initState();
@@ -53,9 +52,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   Container(
                     height: size.height * 0.30,
                     width: double.infinity,
-                    decoration: const BoxDecoration(
-                      color: Color(0xFF38761D),                      
-                    ),
+                    decoration: const BoxDecoration(color: Color(0xFF38761D)),
                   ),
                   SafeArea(
                     child: Column(

@@ -9,8 +9,10 @@ abstract final class Routes {
   static const resetpassword = '/reset-password';
   static const signup = '/signup';
 
-  static const activity = '/$activityRelative';
-  static const activityRelative = 'activity';
+  static const collections = '/$collectionsRelative';
+  static const collectionsRelative = 'collections';
+
+  static String collectionQRById(String id) => '$collections/$id';
 
   static const scanner = '/$scannerRelative';
   static const scannerRelative = 'scanner';

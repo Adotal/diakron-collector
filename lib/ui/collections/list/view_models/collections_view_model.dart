@@ -7,7 +7,16 @@ import 'package:logger/logger.dart';
 
 enum CollectionSort { none, dateAsc, dateDesc }
 
-enum CollectionFilterType { none, date, metal, plastic, paper, glass, completed, pending }
+enum CollectionFilterType {
+  none,
+  date,
+  metal,
+  plastic,
+  paper,
+  glass,
+  completed,
+  pending,
+}
 
 class CollectionsViewModel extends ChangeNotifier {
   CollectionsViewModel({required CollectorRepository collectorRespository})
@@ -25,7 +34,7 @@ class CollectionsViewModel extends ChangeNotifier {
     // {'id': 1, 'waste_type': 'PLÁSTICO'},
     // {'id': 2, 'waste_type': 'METAL'},
     // {'id': 3, 'waste_type': 'VIDRIO'},
-    // {'id': 4, 'waste_type': 'PAPEL/CARTÓN'},    
+    // {'id': 4, 'waste_type': 'PAPEL/CARTÓN'},
   ];
 
   // Estado de Filtros ---
@@ -94,13 +103,13 @@ class CollectionsViewModel extends ChangeNotifier {
           break;
         case CollectionFilterType.none:
           break;
-        case CollectionFilterType.metal:          
-        case CollectionFilterType.plastic:          
-        case CollectionFilterType.paper:          
-        case CollectionFilterType.glass:          
-            if (c.idWasteType != _mapFilterToId(_currentFilter)) return false;
-        break;
-          
+        case CollectionFilterType.metal:
+        case CollectionFilterType.plastic:
+        case CollectionFilterType.paper:
+        case CollectionFilterType.glass:
+          if (c.idWasteType != _mapFilterToId(_currentFilter)) return false;
+          break;
+
         case CollectionFilterType.completed:
           if (!c.isComplete) return false;
         case CollectionFilterType.pending:
@@ -145,11 +154,16 @@ class CollectionsViewModel extends ChangeNotifier {
   // Helper para vincular el Enum con los IDs de tu base de datos
   int _mapFilterToId(CollectionFilterType filter) {
     switch (filter) {
-      case CollectionFilterType.plastic: return 1;
-      case CollectionFilterType.metal:   return 2;
-      case CollectionFilterType.glass:   return 3;
-      case CollectionFilterType.paper:   return 4;      
-      default: return 0;
+      case CollectionFilterType.plastic:
+        return 1;
+      case CollectionFilterType.metal:
+        return 2;
+      case CollectionFilterType.glass:
+        return 3;
+      case CollectionFilterType.paper:
+        return 4;
+      default:
+        return 0;
     }
   }
 }
