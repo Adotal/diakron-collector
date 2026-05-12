@@ -1,5 +1,4 @@
 import 'package:diakron_collectors/ui/core/themes/colors.dart';
-import 'package:diakron_collectors/ui/core/themes/dimens.dart';
 import 'package:diakron_collectors/ui/core/ui/custom_screen.dart';
 import 'package:diakron_collectors/ui/core/ui/error_indicator.dart';
 import 'package:diakron_collectors/ui/core/ui/success_indicator.dart';
@@ -20,7 +19,7 @@ class _ScannerScreenState extends State<ScannerScreen> {
   @override
   Widget build(BuildContext context) {
     return CustomScreen(
-      title: 'Escanear QR de canjeo',
+      title: 'Escanear QR de segregador',
       actions: [
         ListenableBuilder(
           listenable: widget.viewModel,

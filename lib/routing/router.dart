@@ -12,6 +12,8 @@ import 'package:diakron_collectors/ui/auth/reset_password/view_models/reset_pass
 import 'package:diakron_collectors/ui/auth/reset_password/widgets/reset_password_screen.dart';
 import 'package:diakron_collectors/ui/auth/sigunp/view_models/signup_viewmodel.dart';
 import 'package:diakron_collectors/ui/auth/sigunp/widgets/signup_screen.dart';
+import 'package:diakron_collectors/ui/collections/view_models/collections_view_model.dart';
+import 'package:diakron_collectors/ui/collections/widgets/collections_screen.dart';
 import 'package:diakron_collectors/ui/home/view_models/home_viewmodel.dart';
 import 'package:diakron_collectors/ui/home/widgets/home_screen.dart';
 import 'package:diakron_collectors/ui/main/widgets/main_screen.dart';
@@ -59,6 +61,7 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
                   final viewModel = HomeViewModel(
                     authRepository: context.read<AuthRepository>(),
                     locationService: context.read<LocationService>(),
+                    collectorRepository: context.read<CollectorRepository>()
                   );
                   return HomeScreen(viewModel: viewModel);
                 },
@@ -73,12 +76,11 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
         GoRoute(
           path: Routes.activity,
           builder: (context, state) {
-            // final viewModel = ScannerViewModel(
-            //   authRepository: context.read<AuthRepository>(),
-            //   participantRepository: context.read<ParticipantRepository>(),
-            // );
-            // return ScannerScreen(viewModel: viewModel);
-            return Scaffold(body: Text('activity'));
+            final viewModel = CollectionsViewModel(
+              collectorRespository: context.read<CollectorRepository>() 
+             
+            );
+            return CollectionsScreen(viewModel: viewModel);            
           },
         ),
         GoRoute(

@@ -15,8 +15,6 @@ _Collector _$CollectorFromJson(Map<String, dynamic> json) => _Collector(
   isActive: json['is_active'] as bool,
   userType: json['user_type'] as String,
   createdAt: DateTime.parse(json['created_at'] as String),
-  points: (json['points'] as num).toInt(),
-  phrase: json['phrase'] as String?,
 );
 
 Map<String, dynamic> _$CollectorToJson(_Collector instance) =>
@@ -29,5 +27,4 @@ Map<String, dynamic> _$CollectorToJson(_Collector instance) =>
       'is_active': instance.isActive,
       'user_type': instance.userType,
       'created_at': instance.createdAt.toIso8601String(),
-      'points': instance.points,
     };

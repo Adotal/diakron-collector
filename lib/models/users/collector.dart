@@ -20,12 +20,6 @@ abstract class Collector with _$Collector implements UserBase {
     required String userType,
     required DateTime createdAt,
 
-    // Collector fields
-    required int points,
-
-    // Needed for collector, not manually stored
-    @JsonKey(includeToJson: false) String? phrase,
-
   }) = _Collector;
 
   factory Collector.fromJson(Map<String, Object?> json) =>

@@ -9,18 +9,19 @@ class HomeScreen extends StatefulWidget {
   final HomeViewModel viewModel;
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();  
+  State<HomeScreen> createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
+    widget.viewModel.load.execute();
     widget.viewModel.setTrackingStatus.addListener(_onSetTracking);
   }
 
   @override
-  void didUpdateWidget(covariant HomeScreen oldWidget) {    
+  void didUpdateWidget(covariant HomeScreen oldWidget) {
     super.didUpdateWidget(oldWidget);
 
     oldWidget.viewModel.setTrackingStatus.removeListener(_onSetTracking);
@@ -36,7 +37,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    
     final size = MediaQuery.of(context).size;
 
     return Scaffold(
@@ -46,16 +46,16 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           children: [
             SizedBox(
-              height: size.height * 0.42,
+              height: size.height * 0.46,
               child: Stack(
-                children: [                  
+                children: [
                   Container(
-                    height: size.height * 0.38,
+                    height: size.height * 0.46,
                     width: double.infinity,
                     color: const Color(0xFF38761D),
                   ),
                   Positioned(
-                    top: size.height * 0.33,
+                    top: size.height * 0.40,
                     left: 0,
                     right: 0,
                     bottom: 0,
@@ -74,7 +74,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
 
-            // --- SECCIÓN 2: ÚLTIMOS INGRESOS ---
+            //ÚLTIMOS INGRESOS
             _buildSectionTitle("Tus últimos ingresos."),
             const SizedBox(height: 15),
             SingleChildScrollView(
@@ -117,20 +117,79 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   // --- WIDGETS DE APOYO ---
-
   Widget _buildHeaderText(Size size) {
     return Positioned(
       top: size.height * 0.08,
       left: 25,
+      right:
+          25, // Agregado para evitar que textos muy largos se salgan de la pantalla
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Envolvemos el saludo en un Row
+          Row(
+            children: [
+              const Text(
+                "Hola, ",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 28, // Tamaño un poco mayor para destacar
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              // Flexible evita el error de "overflow" si el nombre de usuario es muy largo
+              Flexible(
+                child: ListenableBuilder(
+                  listenable: widget.viewModel.load,
+                  builder: (context, _) {
+                    if (widget.viewModel.load.running) {
+                      // Reducimos el tamaño del indicador para que encaje en la línea de texto
+                      return const SizedBox(
+                        width: 24,
+                        height: 24,
+                        child: CircularProgressIndicator(
+                          color: Colors.white,
+                          strokeWidth: 2.5,
+                        ),
+                      );
+                    } else if (widget.viewModel.load.error) {
+                      return const Text(
+                        "Error",
+                        style: TextStyle(
+                          color: Colors.redAccent,
+                          fontSize: 28,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      );
+                    } else {
+                      return Text(
+                        widget.viewModel.collector.userName,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 28,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        overflow: TextOverflow
+                            .ellipsis, // Si es muy largo, muestra "..."
+                      );
+                    }
+                  },
+                ),
+              ),
+            ],
+          ),
+
+          const SizedBox(
+            height: 15,
+          ), // Separación entre el saludo y la pregunta
+
           const Text(
             '¿Listo para comenzar\na recolectar?',
             style: TextStyle(
               color: Colors.white,
               fontSize: 22,
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight
+                  .w500, // Un peso intermedio para no competir con el "Hola"
             ),
           ),
           const SizedBox(height: 10),
@@ -198,7 +257,8 @@ class _HomeScreenState extends State<HomeScreen> {
               Expanded(
                 child: GestureDetector(
                   // Simplemente apagamos
-                  onTap: () => widget.viewModel.setTrackingStatus.execute(false),
+                  onTap: () =>
+                      widget.viewModel.setTrackingStatus.execute(false),
                   child: Container(
                     decoration: BoxDecoration(
                       color: !widget.viewModel.isActive
@@ -229,11 +289,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildCharacterImage(Size size) {
     return Positioned(
-      top: size.height * 0.1,
+      top: size.height * 0.15,
       right: 20,
       child: SizedBox(
         width: 120,
-        child: Image.asset(          
+        child: Image.asset(
           'assets/images/standing_man.png',
           fit: BoxFit.contain,
         ),
@@ -319,8 +379,8 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  void _onSetTracking(){
-    if(widget.viewModel.setTrackingStatus.error){
+  void _onSetTracking() {
+    if (widget.viewModel.setTrackingStatus.error) {
       widget.viewModel.setTrackingStatus.clearResult;
       _showNotLocationActive();
     }

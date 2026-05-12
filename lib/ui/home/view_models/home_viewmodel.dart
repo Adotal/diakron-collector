@@ -1,7 +1,9 @@
 // home_viewmodel.dart
 import 'package:diakron_collectors/data/repositories/auth/auth_repository.dart';
+import 'package:diakron_collectors/data/repositories/user/collector_repository.dart';
 import 'package:diakron_collectors/data/services/location_service.dart';
 import 'package:diakron_collectors/data/services/notification_service.dart';
+import 'package:diakron_collectors/models/users/collector.dart';
 import 'package:diakron_collectors/utils/command.dart';
 import 'package:diakron_collectors/utils/result.dart';
 import 'package:flutter/foundation.dart';
@@ -11,9 +13,12 @@ class HomeViewModel extends ChangeNotifier {
   HomeViewModel({
     required AuthRepository authRepository,
     required LocationService locationService,
+    required CollectorRepository collectorRepository,
   }) : _authRepository = authRepository,
-       _locationService = locationService {
+       _locationService = locationService,
+       _collectorRepository = collectorRepository {
     // Command0 is used because logout doesn't require input parameters
+    load = Command0(_load);
     logout = Command0<void>(_logout);
     setTrackingStatus = Command1<void, bool>(_setTrackingStatus);
   }
@@ -22,6 +27,7 @@ class HomeViewModel extends ChangeNotifier {
   bool get isActive => _isActive;
 
   final AuthRepository _authRepository;
+  final CollectorRepository _collectorRepository;
   final LocationService _locationService;
   late Command0<void> logout;
   final _logger = Logger();
@@ -29,6 +35,28 @@ class HomeViewModel extends ChangeNotifier {
   bool _isLoading = false;
   bool get isLoading => _isLoading;
   late final Command1 setTrackingStatus;
+  late final Command0 load;
+  Collector? _collector;
+  Collector get collector => _collector!;
+
+  Future<Result<void>> _load() async {
+    try {
+      final result = await _collectorRepository.getCollector(        
+      );
+
+      switch (result) {
+        case Ok<Collector>():
+          _collector = result.value;
+          _logger.i("Cached collector ${_collectorRepository.cachedCollector}");
+        case Error<Collector>():
+          _logger.e('Error fetching collector');
+          return result;
+      }
+      return result;
+    } finally {
+      notifyListeners();
+    }
+  }
 
   // Centralizamos la lógica de encendido y apagado
   Future<Result<void>> _setTrackingStatus(bool enable) async {

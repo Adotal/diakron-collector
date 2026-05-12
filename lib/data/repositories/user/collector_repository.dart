@@ -1,6 +1,7 @@
 import 'package:diakron_collectors/data/services/database_service.dart';
 import 'package:diakron_collectors/models/segregator/segregator.dart';
 import 'package:diakron_collectors/models/users/collector.dart';
+import 'package:diakron_collectors/models/waste_collection/waste_collection.dart';
 import 'package:diakron_collectors/utils/result.dart';
 import 'package:logger/logger.dart';
 
@@ -11,6 +12,7 @@ class CollectorRepository {
   final DatabaseService _databaseService;
   final _logger = Logger();
   Collector? _cachedCollector;
+  Collector get cachedCollector => _cachedCollector!;
 
   Future<Result<Collector>> getCollector({
     bool forceRefresh = false,
@@ -58,4 +60,47 @@ class CollectorRepository {
       return Result.error(error);
     }
   }
+    Future<Result<List<Map<String, dynamic>>>> fetchWasteTypes() async {
+    try {
+      final result = await _databaseService.fetchTable(
+        table: 'waste_types',
+      );
+
+      switch (result) {
+        case Ok<List<Map<String, dynamic>>>():      
+          return Result.ok(result.value);
+
+        case Error<List<Map<String, dynamic>>>():
+          return Result.error(result.error);
+      }
+    } on Exception catch (error) {
+      return Result.error(error);
+    }
+  }
+
+
+  Future<Result<List<WasteCollection>>> fetchWasteCollections() async {
+    try {
+      final result = await _databaseService.fetchTableWhere(
+        table: 'waste_collections',
+        column: 'id_collector',
+        value: _cachedCollector!.id
+      );
+
+      switch (result) {
+        case Ok<List<Map<String, dynamic>>>():
+          List<WasteCollection> wasteCollections = (result.value as List)
+              .map((json) => WasteCollection.fromJson(json))
+              .toList();
+
+          return Result.ok(wasteCollections);
+
+        case Error<List<Map<String, dynamic>>>():
+          return Result.error(result.error);
+      }
+    } on Exception catch (error) {
+      return Result.error(error);
+    }
+  }
+  
 }
