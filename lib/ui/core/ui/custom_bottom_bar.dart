@@ -51,7 +51,7 @@ class CustomBottomBar extends StatelessWidget {
                   ? Icons.article_rounded
                   : Icons.article_outlined,
             ),
-            label: 'Favoritos',
+            label: 'Actividad',
           ),
           BottomNavigationBarItem(
             icon: Icon(

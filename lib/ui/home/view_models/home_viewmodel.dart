@@ -19,7 +19,6 @@ class HomeViewModel extends ChangeNotifier {
        _collectorRepository = collectorRepository {
     // Command0 is used because logout doesn't require input parameters
     load = Command0(_load);
-    logout = Command0<void>(_logout);
     setTrackingStatus = Command1<void, bool>(_setTrackingStatus);
   }
   // Estado para controlar el toggle (false = Inactivo, true = Activo)
@@ -29,7 +28,7 @@ class HomeViewModel extends ChangeNotifier {
   final AuthRepository _authRepository;
   final CollectorRepository _collectorRepository;
   final LocationService _locationService;
-  late Command0<void> logout;
+  
   final _logger = Logger();
   // Nuevo estado: Para mostrar un loading mientras carga el GPS/Token
   bool _isLoading = false;
@@ -101,9 +100,5 @@ class HomeViewModel extends ChangeNotifier {
       _isLoading = false;
       notifyListeners();
     }
-  }
-
-  Future<Result<void>> _logout() async {
-    return await _authRepository.logout();
   }
 }

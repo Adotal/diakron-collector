@@ -19,6 +19,8 @@ import 'package:diakron_collectors/ui/home/widgets/home_screen.dart';
 import 'package:diakron_collectors/ui/main/widgets/main_screen.dart';
 import 'package:diakron_collectors/ui/map/view_models/map_viewmodel.dart';
 import 'package:diakron_collectors/ui/map/widgets/map_screen.dart';
+import 'package:diakron_collectors/ui/profile/view_models/profile_view_model.dart';
+import 'package:diakron_collectors/ui/profile/widgets/profile_screen.dart';
 import 'package:diakron_collectors/ui/scanner/view_models/scanner_viewmodel.dart';
 import 'package:diakron_collectors/ui/scanner/widgets/scanner_screen.dart';
 import 'package:flutter/material.dart';
@@ -108,12 +110,11 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
         GoRoute(
           path: Routes.profile,
           builder: (context, state) {
-            // final viewModel = ScannerViewModel(
-            //   authRepository: context.read<AuthRepository>(),
-            //   participantRepository: context.read<ParticipantRepository>(),
-            // );
-            // return ScannerScreen(viewModel: viewModel);
-            return Scaffold(body: Text('profile'));
+            final viewModel = ProfileViewModel(
+              authRepository: context.read<AuthRepository>(),
+              collectorRepository: context.read<CollectorRepository>()
+            );
+            return ProfileScreen(viewModel: viewModel);            
           },
         ),
       ],
