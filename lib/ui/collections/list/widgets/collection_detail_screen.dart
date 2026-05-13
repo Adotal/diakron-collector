@@ -23,11 +23,11 @@ class CollectionDetailScreen extends StatelessWidget {
         padding: const EdgeInsets.all(20),
         child: Column(
           children: [
-            // --- ESTADO DE LA RECOLECCIÓN ---
+            // ESTADO DE LA RECOLECCIÓN
             _buildStatusHeader(isComplete),
             const SizedBox(height: 20),
 
-            // --- SECCIÓN: INFORMACIÓN BÁSICA (Siempre visible) ---
+            // INFORMACIÓN BÁSICA
             _buildSectionCard(
               title: "Información General",
               icon: Icons.info_outline,

@@ -66,7 +66,7 @@ class _ScannerScreenState extends State<ScannerScreen> {
                 child: SuccessIndicator(
                   title:
                       'Compuertas abiertas exitosamente!\n'
-                      'Plástico',
+                      '${widget.viewModel.selectedMaterials.join(', ')}',
                   label: 'Cerrar',
                   onPressed: () => widget.viewModel.resetSelection(),
                 ),
