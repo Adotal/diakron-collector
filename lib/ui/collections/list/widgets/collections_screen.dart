@@ -184,11 +184,14 @@ class _CollectionsScreenState extends State<CollectionsScreen> {
                                     wasteTypeMap, // Pasamos el Map encontrado
                                 onShowQR: () {
                                   // Lógica para abrir el QR
-                                  if (collection.isExpired()) {
+                                  if (collection.isExpired() ||
+                                      collection.isComplete) {
                                     ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
+                                      SnackBar(
                                         content: Text(
-                                          'Esta recolección ha caducado',
+                                          collection.isExpired()
+                                              ? 'Esta recolección ha caducado'
+                                              : 'Esta recolección ya ha sido completada',
                                         ),
                                       ),
                                     );
@@ -233,7 +236,7 @@ class _CollectionsScreenState extends State<CollectionsScreen> {
     return ChoiceChip(
       label: Text(label),
       selected: isSelected,
-      selectedColor: Colors.green.withValues(alpha:  0.2),
+      selectedColor: Colors.green.withValues(alpha: 0.2),
       checkmarkColor: Colors.green,
       labelStyle: TextStyle(
         color: isSelected ? Colors.green.shade800 : Colors.black87,
@@ -357,7 +360,7 @@ class WasteCollectionCard extends StatelessWidget {
                 ],
               ),
             ),
-      
+
             // Botón QR estilizado
             Positioned(
               top: 8,

@@ -15,10 +15,11 @@ abstract class WasteCollection with _$WasteCollection {
 
     // Campos de la entrega (pueden ser null)
     String? idCollectionCenter,
+    String? ccenterName,
     DateTime? paymentDate,
     int? massGrams,
     double? bruteAmount,
-    double? commision,
+    double? commission,
     double? netAmount,
   }) = _WasteCollection;
 

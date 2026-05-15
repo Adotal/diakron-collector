@@ -18,7 +18,7 @@ class CollectionDetailScreen extends StatelessWidget {
 
     return CustomScreen(
       title: "Detalle de Recolección",
-      
+
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -33,7 +33,10 @@ class CollectionDetailScreen extends StatelessWidget {
               icon: Icons.info_outline,
               children: [
                 _detailRow("ID Registro", "#${collection.id}"),
-                _detailRow("Tipo de Residuo", _getWasteName(collection.idWasteType)),
+                _detailRow(
+                  "Tipo de Residuo",
+                  _getWasteName(collection.idWasteType),
+                ),
                 _detailRow("ID Segregador", "${collection.idSegregator}"),
                 _detailRow("Fecha Recolección", df.format(collection.collDate)),
               ],
@@ -41,23 +44,41 @@ class CollectionDetailScreen extends StatelessWidget {
 
             const SizedBox(height: 20),
 
-            // --- SECCIÓN: DETALLES DE ENTREGA (Solo si isComplete es true) ---
+            // DETALLES DE ENTREGA (Solo si isComplete es true) ---
             if (isComplete)
               _buildSectionCard(
                 title: "Detalles de Entrega y Pago",
                 icon: Icons.receipt_long_outlined,
                 children: [
-                  _detailRow("Centro de Acopio", collection.idCollectionCenter ?? "N/A"),
-                  _detailRow("Peso", "${(collection.massGrams ?? 0) / 1000} kg"),
-                  _detailRow("Fecha de Pago", collection.paymentDate != null ? df.format(collection.paymentDate!) : "Pendiente"),
-                  const Divider(height: 30),
-                  _detailRow("Monto Bruto", currency.format(collection.bruteAmount ?? 0)),
-                  _detailRow("Comisión Diakron", "- ${currency.format(collection.commision ?? 0)}", isNegative: true),
                   _detailRow(
-                    "Monto Neto", 
+                    "Centro de Acopio",
+                    collection.ccenterName ?? "N/A",
+                  ),
+                  _detailRow(
+                    "Peso",
+                    "${(collection.massGrams ?? 0) / 1000} kg",
+                  ),
+                  _detailRow(
+                    "Fecha de Pago",
+                    collection.paymentDate != null
+                        ? df.format(collection.paymentDate!)
+                        : "Pendiente",
+                  ),
+                  const Divider(height: 30),
+                  _detailRow(
+                    "Monto Bruto",
+                    currency.format(collection.bruteAmount ?? 0),
+                  ),
+                  _detailRow(
+                    "Comisión Diakron",
+                    "- ${currency.format(collection.commission ?? 0)}",
+                    isNegative: true,
+                  ),
+                  _detailRow(
+                    "Monto Neto",
                     currency.format(collection.netAmount ?? 0),
                     isBold: true,
-                    valueColor: const Color(0xFF38761D)
+                    valueColor: const Color(0xFF38761D),
                   ),
                 ],
               )
@@ -66,7 +87,7 @@ class CollectionDetailScreen extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Colors.orange.withOpacity(0.1),
+                  color: Colors.orange.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(color: Colors.orange.shade200),
                 ),
@@ -77,7 +98,10 @@ class CollectionDetailScreen extends StatelessWidget {
                     Expanded(
                       child: Text(
                         "Esta recolección aún no ha sido entregada en un centro de acopio.",
-                        style: TextStyle(color: Colors.orangeAccent, fontWeight: FontWeight.w500),
+                        style: TextStyle(
+                          color: Colors.orangeAccent,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
                     ),
                   ],
@@ -94,9 +118,13 @@ class CollectionDetailScreen extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
       decoration: BoxDecoration(
-        color: isComplete ? const Color(0xFF00C853).withOpacity(0.1) : Colors.grey.withOpacity(0.1),
+        color: isComplete
+            ? const Color(0xFF00C853).withOpacity(0.1)
+            : Colors.grey.withOpacity(0.1),
         borderRadius: BorderRadius.circular(30),
-        border: Border.all(color: isComplete ? const Color(0xFF00C853) : Colors.grey),
+        border: Border.all(
+          color: isComplete ? const Color(0xFF00C853) : Colors.grey,
+        ),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -111,7 +139,9 @@ class CollectionDetailScreen extends StatelessWidget {
             isComplete ? "RECOLECCIÓN COMPLETADA" : "PENDIENTE DE ENTREGA",
             style: TextStyle(
               fontWeight: FontWeight.bold,
-              color: isComplete ? const Color(0xFF00C853) : Colors.grey.shade700,
+              color: isComplete
+                  ? const Color(0xFF00C853)
+                  : Colors.grey.shade700,
             ),
           ),
         ],
@@ -120,7 +150,11 @@ class CollectionDetailScreen extends StatelessWidget {
   }
 
   // Widget de tarjeta contenedora
-  Widget _buildSectionCard({required String title, required IconData icon, required List<Widget> children}) {
+  Widget _buildSectionCard({
+    required String title,
+    required IconData icon,
+    required List<Widget> children,
+  }) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(20),
@@ -128,7 +162,11 @@ class CollectionDetailScreen extends StatelessWidget {
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, 4)),
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
         ],
       ),
       child: Column(
@@ -138,7 +176,13 @@ class CollectionDetailScreen extends StatelessWidget {
             children: [
               Icon(icon, color: const Color(0xFF38761D), size: 22),
               const SizedBox(width: 10),
-              Text(title, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.bold)),
+              Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 17,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
             ],
           ),
           const Padding(
@@ -152,13 +196,22 @@ class CollectionDetailScreen extends StatelessWidget {
   }
 
   // Widget para cada fila de información
-  Widget _detailRow(String label, String value, {bool isBold = false, Color? valueColor, bool isNegative = false}) {
+  Widget _detailRow(
+    String label,
+    String value, {
+    bool isBold = false,
+    Color? valueColor,
+    bool isNegative = false,
+  }) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: const TextStyle(color: Colors.black54, fontSize: 14)),
+          Text(
+            label,
+            style: const TextStyle(color: Colors.black54, fontSize: 14),
+          ),
           Text(
             value,
             style: TextStyle(
@@ -175,11 +228,16 @@ class CollectionDetailScreen extends StatelessWidget {
   // Helper para traducir IDs a nombres (puedes mover esto a una utilidad)
   String _getWasteName(int id) {
     switch (id) {
-      case 1: return "Metal";
-      case 2: return "Plástico";
-      case 3: return "Papel/Cartón";
-      case 4: return "Vidrio";
-      default: return "Otros";
+      case 1:
+        return "Plástico";
+      case 2:
+        return "Metal";
+      case 3:
+        return "Vidrio";
+      case 4:
+        return "Papel/Cartón";
+      default:
+        return "Otros";
     }
   }
 }
