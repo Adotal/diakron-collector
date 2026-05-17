@@ -44,7 +44,7 @@ class MapViewModel extends ChangeNotifier {
       final result = await _collectorRepository.fetchSegregators();
       switch (result) {
         
-        case Ok<List<Segregator>>():
+        case Success<List<Segregator>>():
           _segregators = result.value;
 
           // TESTING, PENDING ADD FILTERS
@@ -52,7 +52,7 @@ class MapViewModel extends ChangeNotifier {
 
           _logger.i(_segregators);
 
-        case Error<List<Segregator>>():
+        case Failure<List<Segregator>>():
           _logger.e(result.error);
           return result;
       }

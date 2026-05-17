@@ -30,10 +30,10 @@ class ProfileViewModel extends ChangeNotifier {
       final result = await _collectorRepository.getCollector();
 
       switch (result) {
-        case Ok<Collector>():
+        case Success<Collector>():
           _collector = result.value;
           _logger.i("Cached collector ${_collectorRepository.cachedCollector}");
-        case Error<Collector>():
+        case Failure<Collector>():
           _logger.e('Error fetching collector');
           return result;
       }

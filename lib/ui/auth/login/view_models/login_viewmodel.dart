@@ -15,14 +15,14 @@ class LoginViewModel extends ChangeNotifier {
 
   final Logger _logger = Logger();
 
-  Future<Result<void>> _login( (String, String) credentials ) async {
+  Future<Result<void>> _login((String, String) credentials) async {
     final (email, password) = credentials;
     final result = await _authRepository.login(email, password);
 
-    if (result is Error) {
-      _logger.w('Login failed! $result\nEmail:$email\nPassword:$password');
+    if (result is Failure) {
+      _logger.w('Login failed for $email: ${result.error}');
     } else {
-      _logger.d('Success!\nEmail:$email\nPassword:$password');
+      _logger.d('Success!\nEmail:$email');
     }
 
     return result;

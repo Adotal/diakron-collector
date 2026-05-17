@@ -1,5 +1,6 @@
 import 'package:diakron_collectors/data/repositories/auth/auth_repository.dart';
 import 'package:diakron_collectors/utils/command.dart';
+import 'package:diakron_collectors/utils/displayable_exception.dart';
 import 'package:diakron_collectors/utils/result.dart';
 import 'package:flutter/foundation.dart';
 import 'package:logger/web.dart';
@@ -37,24 +38,25 @@ class SignupViewModel extends ChangeNotifier {
     if (password != confirmPassword ||
         password == '' ||
         confirmPassword == '') {
-      return Result.error(Exception('pws_not_match'));
+      return Result.error(DisplayableException('Las contraseñas no coinciden'));
     }
 
     // Try to sign up
     final result = await _authRepository.signUp(
       username: userName,
-      surnames: surnames,      
+      surnames: surnames,
       email: email,
       phoneNumber: phoneNumber,
       password: password,
     );
 
-    if (result is Error<void>) {
-      _logger.w('Sign up failed! $result');
+    switch (result) {
+      case Success<void>():
+        _logger.i('Signup successful');
+        return Result.ok(null);
+      case Failure<void>():
+        _logger.e('Error signup> ${result.error}');
+        return Result.error(result.error);
     }
-
-    _logger.i('Sign up success! $result');
-
-    return result;
   }
 }

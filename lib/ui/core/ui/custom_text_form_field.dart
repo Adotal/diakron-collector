@@ -15,7 +15,6 @@ class CustomTextFormField extends StatefulWidget {
   });
 
   final bool isPassword;
-
   final String labelText;
   final TextEditingController controller;
   final TextInputType? keyboardType;
@@ -33,11 +32,13 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
 
   @override
   Widget build(BuildContext context) {
-    // Define a consistent border radius
-    final borderRadius = BorderRadius.circular(12);
+    // Un radio ligeramente más amplio da un aspecto más moderno y amigable
+    final borderRadius = BorderRadius.circular(16);
 
     return Padding(
-      padding: const EdgeInsets.only(bottom: 16.0),
+      padding: const EdgeInsets.only(
+        bottom: 20.0,
+      ), // Un poco más de aire entre campos
       child: TextFormField(
         enabled: widget.enabled,
         minLines: widget.minMaxLines,
@@ -45,24 +46,32 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
         maxLength: widget.maxLength,
         controller: widget.controller,
         validator: widget.validator,
-
         keyboardType: widget.keyboardType,
         obscureText: widget.isPassword ? _passwordObscured : false,
-        // This ensures the input text stays dark/readable when disabled
+
         style: TextStyle(
-          color: widget.enabled
-              ? AppColors.black1
-              : AppColors.black1.withOpacity(0.8),
-          fontWeight: widget.enabled ? FontWeight.normal : FontWeight.w500,
+          color: widget.enabled ? AppColors.black1 : Colors.black54,
+          fontSize: 16,
+          fontWeight: widget.enabled ? FontWeight.w500 : FontWeight.w600,
         ),
         decoration: InputDecoration(
           labelText: widget.labelText,
+          // Añadimos padding interno para que el texto respire
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 20,
+            vertical: 18,
+          ),
+
           suffixIcon: !widget.isPassword
               ? null
               : IconButton(
                   icon: Icon(
-                    _passwordObscured ? Icons.visibility_off : Icons.visibility,
-                    color: Colors.grey,
+                    _passwordObscured
+                        ? Icons.visibility_off_outlined
+                        : Icons.visibility_outlined,
+                    color: widget.enabled
+                        ? Colors.grey.shade600
+                        : Colors.grey.shade400,
                   ),
                   onPressed: () {
                     setState(() {
@@ -70,36 +79,60 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
                     });
                   },
                 ),
-          // Label color when the field is active
+
+          // Estilo del label flotante (cuando el campo está enfocado/lleno)
           floatingLabelStyle: TextStyle(
-            color: widget.enabled ? AppColors.greenDiakron1 : AppColors.black1,
-          ),
-          // Label color when field is idle/disabled
-          labelStyle: TextStyle(
             color: widget.enabled
-                ? Colors.grey
-                : AppColors.black1.withOpacity(0.7),
+                ? AppColors.greenDiakron1
+                : Colors.grey.shade600,
+            fontWeight: FontWeight.bold,
           ),
-          // BORDER LOGIC
+
+          // Estilo del label en reposo
+          labelStyle: TextStyle(
+            color: widget.enabled ? Colors.grey.shade500 : Colors.grey.shade400,
+            fontSize: 15,
+          ),
+
+          // Fondos: Blanco si está activo, gris sutil si está deshabilitado
+          filled: true,
+          fillColor: widget.enabled ? Colors.white : Colors.grey.shade100,
+
+          // --- ESTADOS DE LOS BORDES ---
           border: OutlineInputBorder(borderRadius: borderRadius),
+
+          // Reposo
           enabledBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: AppColors.greenDiakron1),
+            borderSide: BorderSide(color: Colors.grey.shade300, width: 1.5),
             borderRadius: borderRadius,
           ),
+
+          // Enfocado (escribiendo)
           focusedBorder: OutlineInputBorder(
             borderSide: BorderSide(color: AppColors.greenDiakron1, width: 2),
             borderRadius: borderRadius,
           ),
-          // Removes the border entirely when disabled
-          disabledBorder: OutlineInputBorder(
-            borderSide: BorderSide.none,
+
+          // Error
+          errorBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.red.shade400, width: 1.5),
             borderRadius: borderRadius,
           ),
-          // Optional: slight background fill to show it's a read-only area
-          filled: !widget.enabled,
-          fillColor: Colors.grey.shade100,
+
+          // Error y enfocado
+          focusedErrorBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.red.shade600, width: 2),
+            borderRadius: borderRadius,
+          ),
+
+          // Deshabilitado (línea muy tenue en lugar de desaparecer por completo)
+          disabledBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.grey.shade200, width: 1),
+            borderRadius: borderRadius,
+          ),
         ),
-        cursorColor: AppColors.black1,
+        cursorColor: AppColors
+            .greenDiakron1, // El cursor hace match con tu color principal
       ),
     );
   }

@@ -1,3 +1,4 @@
+import 'package:diakron_collectors/utils/displayable_exception.dart';
 import 'package:diakron_collectors/utils/result.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -11,66 +12,56 @@ class AuthService {
   Session? get currentSession => _supabase.auth.currentSession;
 
   // Sign in (login)
-  Future<Result<AuthResponse>> signInEmailPassword({
+  Future<AuthResponse> signInWithPassword({
     required String email,
     required String password,
   }) async {
-    try {
-      final result = await _supabase.auth.signInWithPassword(
-        email: email,
-        password: password,
-      );
-         // Check user role is participant, maybeSingle() to prevent Postgrest exceptions if row is missing
-      final data = await _supabase
-          .from('users')
-          .select('user_type')
-          .eq('id', currentUserId!)
-          .maybeSingle();
+    final result = await _supabase.auth.signInWithPassword(
+      email: email,
+      password: password,
+    );
 
-      // Check the data
-      bool isCollector = data != null && data['user_type'] == 'collector';
+    // Check user role is participant, maybeSingle() to prevent Postgrest exceptions if row is missing
+    final data = await _supabase
+        .from('users')
+        .select('user_type')
+        .eq('id', result.user!.id)
+        .maybeSingle();
 
-      if (!isCollector) {
-        await _supabase.auth.signOut(); // Ensure explicit sign-out
-        return Result.error(Exception('Not collector credentials'));
-      }
+    // Check the data
+    bool isAdmin = data != null && data['user_type'] == 'admin';
 
-      return Result.ok(result);
-    } on AuthException catch (error) {
-      // Supabase error
-      return Result.error(Exception(error.message));
-    } catch (error) {
-      return Result.error(Exception("Unknow error"));
+    if (!isAdmin) {
+      await _supabase.auth.signOut(); // Ensure explicit sign-out
+      throw DisplayableException('Credenciales inválidas');
     }
+
+    return result;
   }
 
   // Sign up
-  Future<Result<AuthResponse>> sigUpEmailPassword({
+  Future<AuthResponse> sigUpEmailPassword({
     required String email,
     required String password,
     required String username,
     required String surnames,
-    required String phoneNumber,    
+    required String phoneNumber,
   }) async {
-    try {
-      final result = await _supabase.auth.signUp(
-        email: email,
-        password: password,
-        data: {
-          'user_name': username,
-          'surnames': surnames,
-          'phone_number': phoneNumber,
-          // Empieza desactivado porque es solicitud de registro
-          'is_active': false,
-          // Siempre es admin
-          'user_type': 'collector',
-        },
-      );
+    final result = await _supabase.auth.signUp(
+      email: email,
+      password: password,
+      data: {
+        'user_name': username,
+        'surnames': surnames,
+        'phone_number': phoneNumber,
+        // Empieza desactivado porque es solicitud de registro
+        'is_active': false,
+        // Siempre es collector
+        'user_type': 'collector',
+      },
+    );
 
-      return Result.ok(result);
-    } catch (error) {
-      return Result.error(Exception(error));
-    }
+    return result;
   }
 
   // Sign out

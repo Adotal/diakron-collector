@@ -44,10 +44,10 @@ class HomeViewModel extends ChangeNotifier {
       );
 
       switch (result) {
-        case Ok<Collector>():
+        case Success<Collector>():
           _collector = result.value;
-          _logger.i("Cached collector ${_collectorRepository.cachedCollector}");
-        case Error<Collector>():
+          _logger.i("Cached collector $_collector");
+        case Failure<Collector>():
           _logger.e('Error fetching collector');
           return result;
       }

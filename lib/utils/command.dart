@@ -35,10 +35,10 @@ abstract class Command<T> extends ChangeNotifier {
   Result<T>? _result;
 
   /// true if action completed with error
-  bool get error => _result is Error;
+  bool get error => _result is Failure;
 
   /// true if action completed successfully
-  bool get completed => _result is Ok;
+  bool get completed => _result is Success;
 
   /// Get last action result
   Result? get result => _result;

@@ -3,8 +3,11 @@ import 'package:diakron_collectors/routing/routes.dart';
 import 'package:diakron_collectors/ui/auth/sigunp/view_models/signup_viewmodel.dart';
 import 'package:diakron_collectors/ui/core/themes/dimens.dart';
 import 'package:diakron_collectors/ui/core/ui/custom_screen.dart';
+import 'package:diakron_collectors/ui/core/ui/custom_snackbar.dart';
 import 'package:diakron_collectors/ui/core/ui/custom_text_form_field.dart';
 import 'package:diakron_collectors/ui/core/ui/form_button.dart';
+import 'package:diakron_collectors/utils/displayable_exception.dart';
+import 'package:diakron_collectors/utils/result.dart';
 import 'package:diakron_collectors/utils/validation/validators.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -145,7 +148,7 @@ class _SignupScreenState extends State<SignupScreen> {
                   CustomTextFormField(
                     controller: _phoneNumber,
                     labelText: AppLocalizations.of(context)!.phoneNumber,
-                    validator: Validators.phoneNumber,                    
+                    validator: Validators.phoneNumber,
                   ),
                   const SizedBox(height: Dimens.paddingVertical),
 
@@ -234,12 +237,25 @@ class _SignupScreenState extends State<SignupScreen> {
     }
 
     if (widget.viewModel.signup.error) {
-      final error = widget.viewModel.signup.result;
+      final errorResult = widget.viewModel.signup.result! as Failure<void>;
       widget.viewModel.signup.clearResult();
 
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('$error')));
+      DisplayableException dispExp = DisplayableException("Unknow error");
+
+      if (errorResult.error is DisplayableException) {
+        dispExp = errorResult.error as DisplayableException;
+      } else {
+        // Print non-displayable errors to console for debug
+        debugPrint("Unhandled background error: ${errorResult.error}");
+      }
+
+      if (mounted) {
+        CustomSnackBar.showError(
+          context,
+          title: "Error en registro",
+          message: "$dispExp",
+        );
+      }
     }
   }
 

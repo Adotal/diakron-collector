@@ -5,8 +5,11 @@ import 'package:diakron_collectors/ui/auth/login/view_models/login_viewmodel.dar
 import 'package:diakron_collectors/ui/core/themes/app_strings.dart';
 import 'package:diakron_collectors/ui/core/themes/colors.dart';
 import 'package:diakron_collectors/ui/core/themes/dimens.dart';
+import 'package:diakron_collectors/ui/core/ui/custom_snackbar.dart';
 import 'package:diakron_collectors/ui/core/ui/form_button.dart';
 import 'package:diakron_collectors/ui/core/ui/input_text.dart';
+import 'package:diakron_collectors/utils/displayable_exception.dart';
+import 'package:diakron_collectors/utils/result.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -318,24 +321,24 @@ class _LoginScreenState extends State<LoginScreen>
     }
 
     if (widget.viewModel.login.error) {
-      final error = widget.viewModel.login.result;
+      final errorResult = widget.viewModel.login.result! as Failure<void>;
       widget.viewModel.login.clearResult();
 
+      DisplayableException dispExp = DisplayableException("Unknow error");
+
+      // Safely check if the inner exception is a DisplayableException
+      if (errorResult.error is DisplayableException) {
+        dispExp = errorResult.error as DisplayableException;
+      } else {
+        // Print non-displayable errors to console for debug
+        debugPrint("Unhandled background error: ${errorResult.error}");
+      }
+
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            duration: Duration(seconds: 5),
-            persist: false,
-            dismissDirection: DismissDirection.horizontal,
-            content: Text('Error: $error'),
-            action: SnackBarAction(
-              label: "Try again",
-              onPressed: () => widget.viewModel.login.execute((
-                _email.value.text,
-                _password.value.text,
-              )),
-            ),
-          ),
+        CustomSnackBar.showError(
+          context,
+          title: "Error de Inicio de Sesión",
+          message: dispExp.message,
         );
       }
     }

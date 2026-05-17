@@ -21,7 +21,7 @@ class ForgotPasswordViewmodel extends ChangeNotifier {
     }
 
     final result = await _authRepository.sendEmailforgetPassword(email: email);
-    if (result is Error) {
+    if (result is Failure) {
       _logger.e(result.error);
       return Result.error(result.error);
     }

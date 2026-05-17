@@ -57,9 +57,9 @@ class CollectionsViewModel extends ChangeNotifier {
 
       final resultWT = await _collectorRepository.fetchWasteTypes();
       switch (resultWT) {
-        case Ok<List<Map<String, dynamic>>>():
+        case Success<List<Map<String, dynamic>>>():
           allWasteTypes = resultWT.value;
-        case Error<List<Map<String, dynamic>>>():
+        case Failure<List<Map<String, dynamic>>>():
           _logger.w('Failed to fecth Waste Types ${resultWT.error}');
           return Result.error(resultWT.error);
       }
@@ -67,11 +67,11 @@ class CollectionsViewModel extends ChangeNotifier {
       // Fetch collections
       final result = await _collectorRepository.fetchWasteCollections();
       switch (result) {
-        case Ok<List<WasteCollection>>():
+        case Success<List<WasteCollection>>():
           _allWasteCollections = result.value;
           _applyFilters();
           _logger.i(_allWasteCollections);
-        case Error<List<WasteCollection>>():
+        case Failure<List<WasteCollection>>():
           _logger.w('Failed to load Coupons ${result.error}');
       }
 

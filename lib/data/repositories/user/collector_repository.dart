@@ -21,12 +21,12 @@ class CollectorRepository {
     }
     final result = await _databaseService.getCollector();
     switch (result) {
-      case Ok<Map<String, dynamic>>():
+      case Success<Map<String, dynamic>>():
         _cachedCollector = Collector.fromJson(result.value);
 
         _logger.i('Returned refreshed ${_cachedCollector.toString()}');
         return Result.ok(_cachedCollector!);
-      case Error<Map<String, dynamic>>():
+      case Failure<Map<String, dynamic>>():
         return Result.error(result.error);
     }
   }
@@ -44,14 +44,14 @@ class CollectorRepository {
       );
 
       switch (result) {
-        case Ok<List<Map<String, dynamic>>>():
+        case Success<List<Map<String, dynamic>>>():
           List<Segregator> segregators = (result.value as List)
               .map((json) => Segregator.fromJson(json))
               .toList();
 
           return Result.ok(segregators);
 
-        case Error<List<Map<String, dynamic>>>():
+        case Failure<List<Map<String, dynamic>>>():
           return Result.error(result.error);
       }
     } on Exception catch (error) {
@@ -64,10 +64,10 @@ class CollectorRepository {
       final result = await _databaseService.fetchTable(table: 'waste_types');
 
       switch (result) {
-        case Ok<List<Map<String, dynamic>>>():
+        case Success<List<Map<String, dynamic>>>():
           return Result.ok(result.value);
 
-        case Error<List<Map<String, dynamic>>>():
+        case Failure<List<Map<String, dynamic>>>():
           return Result.error(result.error);
       }
     } on Exception catch (error) {
@@ -84,14 +84,14 @@ class CollectorRepository {
       );
 
       switch (result) {
-        case Ok<List<Map<String, dynamic>>>():
+        case Success<List<Map<String, dynamic>>>():
           List<WasteCollection> wasteCollections = (result.value as List)
               .map((json) => WasteCollection.fromJson(json))
               .toList();
 
           return Result.ok(wasteCollections);
 
-        case Error<List<Map<String, dynamic>>>():
+        case Failure<List<Map<String, dynamic>>>():
           return Result.error(result.error);
       }
     } on Exception catch (error) {
@@ -108,10 +108,10 @@ class CollectorRepository {
       );
 
       switch (result) {
-        case Ok<List<Map<String, dynamic>>>():
+        case Success<List<Map<String, dynamic>>>():
         // Retorna solamente payload del primer y único resultado
           return Result.ok(result.value[0]['payload']);
-        case Error<List<Map<String, dynamic>>>():          
+        case Failure<List<Map<String, dynamic>>>():          
           return Result.error(result.error);
       }
 

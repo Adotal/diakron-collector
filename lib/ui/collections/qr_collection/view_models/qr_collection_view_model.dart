@@ -28,11 +28,11 @@ class QRCollectionViewModel extends ChangeNotifier {
       );
 
       switch (result) {
-        case Ok<String>():
+        case Success<String>():
           payload = result.value;
           _logger.i("QR Payload: $payload");
           break;
-        case Error<String>():
+        case Failure<String>():
           _logger.e(result.error);
       }
 
